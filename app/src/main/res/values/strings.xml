@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">audioPlayer</string>
+    <string name="btnPlay">Play</string>
+    <string name="btnPrev">Prev</string>
+    <string name="btnNext">Next</string>
+    <string name="chbLoop">Loop</string>
+    <string name="allSongsFromArtistList">All songs</string>
+    <string name="backToPlayer">Back</string>
+</resources>
