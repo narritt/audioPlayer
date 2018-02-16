@@ -103,7 +103,17 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
         startTime = mediaPlayer.getCurrentPosition();
         finalTime = mediaPlayer.getDuration();
 
-        //defense for 0-9 seconds duration for string like 1:9, should be 1:09
+
+        //defense for 0-9 seconds duration and position for string like 1:9, should be 1:09
+        if((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
+            songDuration.setText(String.format("%d:0%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+        else
+            songDuration.setText(String.format("%d:%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+
         if((TimeUnit.MILLISECONDS.toSeconds((long) finalTime) % 60) < 10)
             songDuration.setText(String.format("%d:0%d",
                     TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
@@ -113,7 +123,6 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
                     TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
                     TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
 
-        currentSongPosition.setText("0:00");
         progressControl.setMax((int)finalTime);
         progressControl.setProgress((int)startTime);
         myHandler.postDelayed(UpdateSongTime,100);
