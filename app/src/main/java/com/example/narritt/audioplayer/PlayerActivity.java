@@ -2,10 +2,12 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,24 +24,37 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends Activity /*implements OnCompletionListener*/  {
     private static final String TAG = "MyAudioPlayer";
-    MediaPlayer mediaPlayer;
+    private static Context context;
+
+    public static MediaPlayer mediaPlayer;
     AudioManager am;
-    ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
+
+    static ImageButton btnPlay;
+    ImageButton /*btnPlay,*/ btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     SeekBar progressControl;
     double startTime, finalTime;
     boolean isMusicPlaying, isRandom, isLooping;
     Handler myHandler = new Handler();;
 
-
     final String DATA_SD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC) + "/music.mp3";
+
+    public static void reloadMediaPlayer(Uri uri){
+        mediaPlayer.stop();
+        mediaPlayer = MediaPlayer.create(context, uri);
+
+        mediaPlayer.start();
+        btnPlay.setImageResource(R.drawable.pause);
+
+        //play();           - HOW THE FUCK IT SHOULD WORK WTF DUDE
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         Log.i(TAG, "OnCreate");
-        //am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        context = getApplicationContext();
         checkPermission();
 
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
@@ -233,5 +248,8 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
                 e.printStackTrace();
             }
         }
+    }
+    public static Context getAppContext() {
+        return PlayerActivity.context;
     }
 }

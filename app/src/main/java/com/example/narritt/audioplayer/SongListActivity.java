@@ -1,6 +1,7 @@
 package com.example.narritt.audioplayer;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,16 +19,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class SongListActivity extends Activity {
+    private static final String TAG = "MyAudioPlayer";
 
     enum ListViewStage{ ARTISTS, ALBUMS, SONGS, ALL_SONGS}
-    private ListViewStage currStage = ListViewStage.ARTISTS;
 
-    private ArrayList<Artist> artistList = new ArrayList<Artist>();
+    private ArrayList<Artist> artistList;
     private ArrayList<Album> albumList;
     private ArrayList<Song> thisAlbumSongsList;
     private ArrayList<Song> songList;
     private ListView songView;
 
+    private static ListViewStage currStage = ListViewStage.ARTISTS;
     private static Artist pickedArtist = null;
     private static Album pickedAlbum = null;
 
@@ -50,7 +53,9 @@ public class SongListActivity extends Activity {
                     break;
                 case SONGS:
                     Toast toast = Toast.makeText(getApplicationContext(), "Готов воспроизводить трек из альбома", Toast.LENGTH_SHORT);
-                    toast.show();
+                    //toast.show();
+                    PlayerActivity.reloadMediaPlayer(thisAlbumSongsList.get(position).getPath());
+                    finish();
                     break;
                 case ALL_SONGS:
                     toast = Toast.makeText(getApplicationContext(), "Готов воспроизводить трек из полного списка", Toast.LENGTH_SHORT);
@@ -151,15 +156,20 @@ public class SongListActivity extends Activity {
                     (MediaStore.Audio.Media.ALBUM);
             int posColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.TRACK);
+            int pathColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DATA);
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisAlbum = musicCursor.getString(albumColumn);
                 int thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
+                String thisPath = musicCursor.getString(pathColumn);
+                //Log.i(TAG, thisPath);
 
-                if(!thisTitle.contains("AUD-20"))//defense from whatsapp audiorecords
-                    songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition));
+                //defense from whatsapp audiorecords and google talk notifications and ringtones
+                if((!thisPath.contains("WhatsApp Audio")) && !thisPath.contains("com.google.android.talk"))
+                    songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition, thisPath));
             }
             while (musicCursor.moveToNext());
         }
