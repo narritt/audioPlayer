@@ -85,7 +85,7 @@
                 android:id="@+id/btnLoop"
                 android:onClick="btnLoopClick"
                 android:src="@drawable/loop_off"
-                android:background="@drawable/btn_small_borders" />
+                android:background="@drawable/btn_none_borders" />
             <ImageButton
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -94,7 +94,7 @@
                 android:id="@+id/btnPrev"
                 android:src="@drawable/prev"
                 android:onClick="btnPrevClick"
-                android:background="@drawable/btn_small_borders" />
+                android:background="@drawable/btn_none_borders" />
 
             <ImageButton
                 android:layout_width="match_parent"
@@ -104,7 +104,7 @@
                 android:id="@+id/btnPlay"
                 android:onClick="btnPlayClick"
                 android:src="@drawable/play"
-                android:background="@drawable/btn_small_borders" />
+                android:background="@drawable/btn_none_borders" />
             <ImageButton
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -113,7 +113,7 @@
                 android:id="@+id/btnNext"
                 android:src="@drawable/next"
                 android:onClick="btnNextClick"
-                android:background="@drawable/btn_small_borders" />
+                android:background="@drawable/btn_none_borders" />
             <ImageButton
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -122,7 +122,7 @@
                 android:id="@+id/btnRand"
                 android:src="@drawable/rand_off"
                 android:onClick="btnRandClick"
-                android:background="@drawable/btn_small_borders" />
+                android:background="@drawable/btn_none_borders" />
         </LinearLayout>
 
     <Button
@@ -133,5 +133,5 @@
         android:layout_alignParentStart="true"
         android:layout_above="@+id/strSongName"
         android:onClick="btnBack"
-        android:background="@drawable/btn_small_borders" />
+        android:background="@drawable/btn_none_borders" />
 </RelativeLayout>
