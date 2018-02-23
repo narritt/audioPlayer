@@ -53,8 +53,8 @@ public class SongListActivity extends Activity {
                     break;
                 case SONGS:
                     Toast toast = Toast.makeText(getApplicationContext(), "Готов воспроизводить трек из альбома", Toast.LENGTH_SHORT);
-                    //toast.show();
-                    PlayerActivity.reloadMediaPlayer(thisAlbumSongsList.get(position).getPath());
+                    PlayerActivity plAct = PlayerActivity.getInstance();
+                    plAct.play(thisAlbumSongsList.get(position));
                     finish();
                     break;
                 case ALL_SONGS:

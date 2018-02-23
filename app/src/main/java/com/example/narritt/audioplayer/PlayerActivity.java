@@ -22,39 +22,27 @@ import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
-public class PlayerActivity extends Activity /*implements OnCompletionListener*/  {
+public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
-    private static Context context;
+    static PlayerActivity instance;
 
     public static MediaPlayer mediaPlayer;
-    AudioManager am;
+    Song currSong;
 
-    static ImageButton btnPlay;
-    ImageButton /*btnPlay,*/ btnRand, btnLoop, btnNext, btnPrev;
+    ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     SeekBar progressControl;
     double startTime, finalTime;
     boolean isMusicPlaying, isRandom, isLooping;
-    Handler myHandler = new Handler();;
+    Handler myHandler = new Handler();
 
-    final String DATA_SD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC) + "/music.mp3";
-
-    public static void reloadMediaPlayer(Uri uri){
-        mediaPlayer.stop();
-        mediaPlayer = MediaPlayer.create(context, uri);
-
-        mediaPlayer.start();
-        btnPlay.setImageResource(R.drawable.pause);
-
-        //play();           - HOW THE FUCK IT SHOULD WORK WTF DUDE
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         Log.i(TAG, "OnCreate");
-        context = getApplicationContext();
+        instance = this;
         checkPermission();
 
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
@@ -104,20 +92,28 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
     }
 
     public void btnPlayClick(View view){
-        if(isMusicPlaying)
+        if(isMusicPlaying) {
             pausePlay();
-        else
-            play();
+        }
+        else {
+            resumePlay();
+        }
     }
 
-    public void play(){
+    public void play(Song song){
+        mediaPlayer.stop();
+        mediaPlayer = MediaPlayer.create(this, song.getPath());
+        currSong = song;
         mediaPlayer.start();
         isMusicPlaying = true;
         btnPlay.setImageResource(R.drawable.pause);
 
+        artistName.setText(song.getArtist());
+        albumName.setText(song.getAlbum());
+        songName.setText(song.getTitle());
+
         startTime = mediaPlayer.getCurrentPosition();
         finalTime = mediaPlayer.getDuration();
-
 
         //defense for 0-9 seconds duration and position for string like 1:9, should be 1:09
         if((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
@@ -149,7 +145,11 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
         isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
     }
-
+    public void resumePlay(){
+        mediaPlayer.start();
+        isMusicPlaying = true;
+        btnPlay.setImageResource(R.drawable.pause);
+    }
     private void stopPlay(){
         mediaPlayer.stop();
         isMusicPlaying = false;
@@ -182,10 +182,8 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
     };
 
     public void btnPrevClick(View view){
-        //mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 3000);
         mediaPlayer.seekTo(0);
     }
-
     public void btnNextClick(View view){
         mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 3000);
     }
@@ -201,7 +199,6 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
         }
         isLooping = !isLooping;
     }
-
     public void btnRandClick(View view){
         if (isRandom)
             btnRand.setImageResource(R.drawable.rand_off);
@@ -249,7 +246,7 @@ public class PlayerActivity extends Activity /*implements OnCompletionListener*/
             }
         }
     }
-    public static Context getAppContext() {
-        return PlayerActivity.context;
+    public static PlayerActivity getInstance() {
+        return instance;
     }
 }
