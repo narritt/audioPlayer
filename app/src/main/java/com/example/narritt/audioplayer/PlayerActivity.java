@@ -34,6 +34,8 @@ public class PlayerActivity extends Activity {
     SeekBar progressControl;
     double startTime, finalTime;
     boolean isMusicPlaying, isRandom, isLooping;
+
+    FileMaster fileMaster;
     Handler myHandler = new Handler();
 
 
@@ -57,13 +59,22 @@ public class PlayerActivity extends Activity {
         currentSongPosition = (TextView) findViewById(R.id.strCurrentSongPosition);
         progressControl = (SeekBar) findViewById(R.id.progressControl);
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.music);
+        fileMaster = new FileMaster(getApplicationContext());
+        currSong = fileMaster.readCurrentSong();
+        if (currSong == null)
+            mediaPlayer = MediaPlayer.create(this, R.raw.music);
+        else {
+            mediaPlayer = MediaPlayer.create(this, currSong.getPath());
+            prepareInterface(currSong);
+        }
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 stopPlay();
             }
         });
+
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             boolean pausedOnTouch;
 
@@ -105,6 +116,10 @@ public class PlayerActivity extends Activity {
         mediaPlayer = MediaPlayer.create(this, song.getPath());
         currSong = song;
         mediaPlayer.start();
+        prepareInterface(song);
+    }
+
+    public void prepareInterface(Song song){
         isMusicPlaying = true;
         btnPlay.setImageResource(R.drawable.pause);
 
@@ -137,7 +152,6 @@ public class PlayerActivity extends Activity {
         progressControl.setMax((int)finalTime);
         progressControl.setProgress((int)startTime);
         myHandler.postDelayed(UpdateSongTime,100);
-
     }
 
     public void pausePlay(){
@@ -230,8 +244,10 @@ public class PlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         releaseMP();
+        Log.i(TAG, "On destroy, trying to write current song");
+        fileMaster.writeCurrentSong(currSong);
+        super.onDestroy();
     }
 
     /*  Освобождает используемые проигрывателем ресурсы, его рекомендуется вызывать когда вы закончили работу с плеером.
