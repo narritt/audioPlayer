@@ -33,7 +33,8 @@ public class PlayerActivity extends Activity {
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     SeekBar progressControl;
     double startTime, finalTime;
-    boolean isMusicPlaying, isRandom, isLooping;
+    boolean isMusicPlaying, isRandom, isLooping,
+        isApplicationDestroying = false;
 
     FileMaster fileMaster;
     Handler myHandler = new Handler();
@@ -180,18 +181,20 @@ public class PlayerActivity extends Activity {
     private Runnable UpdateSongTime = new Runnable() {
         @Override
         public void run() {
-            startTime = mediaPlayer.getCurrentPosition();
-            //defense for 0-9 seconds position for string like 1:9, should be 1:09
-            if((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
-                currentSongPosition.setText(String.format("%d:0%d",
-                        TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                        TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-            else
-                currentSongPosition.setText(String.format("%d:%d",
-                        TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                        TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-            progressControl.setProgress((int)startTime);
-            myHandler.postDelayed(this, 100);
+            if(!isApplicationDestroying) {
+                startTime = mediaPlayer.getCurrentPosition();
+                //defense for 0-9 seconds position for string like 1:9, should be 1:09
+                if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
+                    currentSongPosition.setText(String.format("%d:0%d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                            TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+                else
+                    currentSongPosition.setText(String.format("%d:%d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                            TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+                progressControl.setProgress((int) startTime);
+                myHandler.postDelayed(this, 100);
+            }
         }
     };
 
@@ -244,6 +247,7 @@ public class PlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        isApplicationDestroying = true;
         releaseMP();
         Log.i(TAG, "On destroy, trying to write current song");
         fileMaster.writeCurrentSong(currSong);
@@ -254,6 +258,7 @@ public class PlayerActivity extends Activity {
         Более того, хелп рекомендует вызывать этот метод и при onPause/onStop, если нет острой необходимости держать объект.    */
     private void releaseMP() {
         if (mediaPlayer != null) {
+            stopPlay();
             try {
                 mediaPlayer.release();
                 mediaPlayer = null;
