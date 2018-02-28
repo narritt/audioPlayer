@@ -1,12 +1,15 @@
 package com.example.narritt.audioplayer;
 
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Created by Narritt on 28.11.2017.
  */
 
 public class Song {
+    private static final String TAG = "MyAudioPlayer";
+
     private long id;
     private String title;
     private String album;
@@ -14,7 +17,7 @@ public class Song {
     private int position;
     private String path;
 
-    public Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath) {
+    protected Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath) {
         id = songID;
         title = songTitle;
         album = songAlbum;
@@ -22,7 +25,7 @@ public class Song {
         position = songPosition;
         path = songPath;
     }
-    public Song(String data){
+    protected Song(String data){
         Song tmpSong = this.toSong(data);
         id = tmpSong.id;
         title = tmpSong.title;
@@ -34,10 +37,10 @@ public class Song {
 
     public long getID(){return id;}
     public String getTitle(){return title;}
-    public String getAlbum() {return album;}
-    public String getArtist(){return artist;}
-    public int getPosition() {return position;}
-    public Uri getPath()  {return Uri.parse("file://" + path);}
+    protected String getAlbum() {return album;}
+    protected String getArtist(){return artist;}
+    protected int getPosition() {return position;}
+    protected Uri getPath()  {return Uri.parse("file://" + path);}
 
     public String toString(){
         return ("ID:" + this.id +
@@ -47,15 +50,15 @@ public class Song {
                 ";POSITION:" + this.position +
                 ";PATH:" + this.path);
     }
-    public Song toSong(String str){
+    protected Song toSong(String str){
         String params[] = str.split(";");
         Song song = new Song(
-                Long.parseLong(params[0].substring(4)), //ID
-                params[1].substring(7),     //TITLE
-                params[2].substring(7),     //ALBUM
-                params[3].substring(8),     //ARTIST
-                Integer.parseInt(params[4].substring(10)),    //POSITION
-                params[5].substring(6)      //PATH
+                Long.parseLong(params[0].substring(3)), //ID
+                params[1].substring(6),     //TITLE
+                params[2].substring(6),     //ALBUM
+                params[3].substring(7),     //ARTIST
+                Integer.parseInt(params[4].substring(9)),    //POSITION
+                params[5].substring(5)      //PATH
         );
         return song;
     }

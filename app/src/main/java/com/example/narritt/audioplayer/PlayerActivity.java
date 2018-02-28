@@ -33,8 +33,10 @@ public class PlayerActivity extends Activity {
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     SeekBar progressControl;
     double startTime, finalTime;
-    boolean isMusicPlaying, isRandom, isLooping,
-        isApplicationDestroying = false;
+    boolean isMusicPlaying = false,
+            isRandom,
+            isLooping,
+            isApplicationDestroying = false;
 
     FileMaster fileMaster;
     Handler myHandler = new Handler();
@@ -113,6 +115,7 @@ public class PlayerActivity extends Activity {
     }
 
     public void play(Song song){
+        isMusicPlaying = true;
         mediaPlayer.stop();
         mediaPlayer = MediaPlayer.create(this, song.getPath());
         currSong = song;
@@ -121,8 +124,10 @@ public class PlayerActivity extends Activity {
     }
 
     public void prepareInterface(Song song){
-        isMusicPlaying = true;
-        btnPlay.setImageResource(R.drawable.pause);
+        if(isMusicPlaying)
+            btnPlay.setImageResource(R.drawable.pause);
+        else
+            btnPlay.setImageResource(R.drawable.play);
 
         artistName.setText(song.getArtist());
         albumName.setText(song.getAlbum());
@@ -152,7 +157,8 @@ public class PlayerActivity extends Activity {
 
         progressControl.setMax((int)finalTime);
         progressControl.setProgress((int)startTime);
-        myHandler.postDelayed(UpdateSongTime,100);
+        if(isMusicPlaying)
+            myHandler.postDelayed(UpdateSongTime,100);
     }
 
     public void pausePlay(){
