@@ -2,13 +2,9 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -34,9 +30,9 @@ public class PlayerActivity extends Activity {
     SeekBar progressControl;
     double startTime, finalTime;
     boolean isMusicPlaying = false,
+            isApplicationDestroying = false,
             isRandom,
-            isLooping,
-            isApplicationDestroying = false;
+            isLooping;
 
     FileMaster fileMaster;
     Handler myHandler = new Handler();
@@ -46,10 +42,11 @@ public class PlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        Log.i(TAG, "OnCreate");
+        Log.i(TAG, "OnCreate in " + this.getLocalClassName());
         instance = this;
         checkPermission();
 
+        //Finding elements in R
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
         btnLoop = (ImageButton) findViewById(R.id.btnLoop);
         btnRand = (ImageButton) findViewById(R.id.btnRand);
@@ -62,6 +59,7 @@ public class PlayerActivity extends Activity {
         currentSongPosition = (TextView) findViewById(R.id.strCurrentSongPosition);
         progressControl = (SeekBar) findViewById(R.id.progressControl);
 
+        //getting written curent song from file
         fileMaster = new FileMaster(getApplicationContext());
         currSong = fileMaster.readCurrentSong();
         if (currSong == null)
@@ -83,8 +81,10 @@ public class PlayerActivity extends Activity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser)
+                if(fromUser) {
                     mediaPlayer.seekTo(progress);
+                    UpdateSongTimeManualy();
+                }
             }
 
             @Override
@@ -106,12 +106,10 @@ public class PlayerActivity extends Activity {
     }
 
     public void btnPlayClick(View view){
-        if(isMusicPlaying) {
+        if(isMusicPlaying)
             pausePlay();
-        }
-        else {
+        else
             resumePlay();
-        }
     }
 
     public void play(Song song){
@@ -170,6 +168,7 @@ public class PlayerActivity extends Activity {
         mediaPlayer.start();
         isMusicPlaying = true;
         btnPlay.setImageResource(R.drawable.pause);
+        myHandler.postDelayed(UpdateSongTime,100);
     }
     private void stopPlay(){
         mediaPlayer.stop();
@@ -184,6 +183,19 @@ public class PlayerActivity extends Activity {
         }
     }
 
+    private void UpdateSongTimeManualy(){
+        startTime = mediaPlayer.getCurrentPosition();
+        //defense for 0-9 seconds position for string like 1:9, should be 1:09
+        if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
+            currentSongPosition.setText(String.format("%d:0%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+        else
+            currentSongPosition.setText(String.format("%d:%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+        progressControl.setProgress((int) startTime);
+    }
     private Runnable UpdateSongTime = new Runnable() {
         @Override
         public void run() {
@@ -205,7 +217,10 @@ public class PlayerActivity extends Activity {
     };
 
     public void btnPrevClick(View view){
-        mediaPlayer.seekTo(0);
+        if (mediaPlayer.getCurrentPosition() > 1500) {
+            mediaPlayer.seekTo(0);
+            UpdateSongTimeManualy();
+        }
     }
     public void btnNextClick(View view){
         mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 3000);
