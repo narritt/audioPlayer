@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends Activity {
@@ -24,6 +25,7 @@ public class PlayerActivity extends Activity {
 
     public static MediaPlayer mediaPlayer;
     Song currSong;
+    ArrayList<Song> currPlaylist;
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
@@ -62,6 +64,7 @@ public class PlayerActivity extends Activity {
         //getting written curent song from file
         fileMaster = new FileMaster(getApplicationContext());
         currSong = fileMaster.readCurrentSong();
+        //currPlaylist = fileMaster.readCurrentPlaylist;
         if (currSong == null)
             mediaPlayer = MediaPlayer.create(this, R.raw.music);
         else {
@@ -112,13 +115,14 @@ public class PlayerActivity extends Activity {
             resumePlay();
     }
 
-    public void play(Song song){
+    public void play(ArrayList<Song> songs, int position){
         isMusicPlaying = true;
         mediaPlayer.stop();
-        mediaPlayer = MediaPlayer.create(this, song.getPath());
-        currSong = song;
+        mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
+        currPlaylist = songs;
+        currSong = songs.get(position);
         mediaPlayer.start();
-        prepareInterface(song);
+        prepareInterface(songs.get(position));
     }
 
     public void prepareInterface(Song song){

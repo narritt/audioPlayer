@@ -54,12 +54,15 @@ public class SongListActivity extends Activity {
                 case SONGS:
                     Toast toast = Toast.makeText(getApplicationContext(), "Готов воспроизводить трек из альбома", Toast.LENGTH_SHORT);
                     PlayerActivity plAct = PlayerActivity.getInstance();
-                    plAct.play(thisAlbumSongsList.get(position));
+                    plAct.play(thisAlbumSongsList, position);
                     finish();
                     break;
                 case ALL_SONGS:
                     toast = Toast.makeText(getApplicationContext(), "Готов воспроизводить трек из полного списка", Toast.LENGTH_SHORT);
-                    toast.show();
+                    //toast.show();
+                    plAct = PlayerActivity.getInstance();
+                    plAct.play(songList, position);
+                    finish();
                     break;
             }
         }
