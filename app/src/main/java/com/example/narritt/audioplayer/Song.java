@@ -62,4 +62,30 @@ public class Song {
         );
         return song;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Song)) return false;
+
+        Song song = (Song) o;
+
+        if (id != song.id) return false;
+        if (position != song.position) return false;
+        if (title != null ? !title.equals(song.title) : song.title != null) return false;
+        if (album != null ? !album.equals(song.album) : song.album != null) return false;
+        if (artist != null ? !artist.equals(song.artist) : song.artist != null) return false;
+        return path.equals(song.path);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (album != null ? album.hashCode() : 0);
+        result = 31 * result + (artist != null ? artist.hashCode() : 0);
+        result = 31 * result + position;
+        result = 31 * result + path.hashCode();
+        return result;
+    }
 }

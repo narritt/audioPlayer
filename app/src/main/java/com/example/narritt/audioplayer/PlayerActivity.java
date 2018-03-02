@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends Activity {
@@ -72,13 +73,6 @@ public class PlayerActivity extends Activity {
             prepareInterface(currSong);
         }
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                stopPlay();
-            }
-        });
-
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             boolean pausedOnTouch;
 
@@ -109,10 +103,15 @@ public class PlayerActivity extends Activity {
     }
 
     public void btnPlayClick(View view){
-        if(isMusicPlaying)
-            pausePlay();
-        else
-            resumePlay();
+        if(currPlaylist == null) {
+            Toast.makeText(this, "Сначала нужно выбрать трек!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (isMusicPlaying)
+                pausePlay();
+            else
+                resumePlay();
+        }
     }
 
     public void play(ArrayList<Song> songs, int position){
@@ -123,6 +122,33 @@ public class PlayerActivity extends Activity {
         currSong = songs.get(position);
         mediaPlayer.start();
         prepareInterface(songs.get(position));
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.i(TAG, "Track is completed");
+                if(currPlaylist == null) {
+                    Log.i(TAG, "MP.onCompletion : currPlayList is empty.");
+                    stopPlay();
+                } else {
+                    int indexCurrSong = currPlaylist.indexOf(currSong);
+                    if(!isRandom) {
+                        if (indexCurrSong >= currPlaylist.size() - 1) {
+                            if(isLooping)
+                                play(currPlaylist, 0);
+                            else {
+                                play(currPlaylist, 0);
+                                stopPlay();
+                            }
+                        }
+                        else
+                            play(currPlaylist, indexCurrSong + 1);
+                    } else {
+                        // TODO : 02.03.18 create normal randomizer
+                        play(currPlaylist, new Random().nextInt(currPlaylist.size()));
+                    }
+                }
+            }
+        });
     }
 
     public void prepareInterface(Song song){
@@ -225,19 +251,48 @@ public class PlayerActivity extends Activity {
             mediaPlayer.seekTo(0);
             UpdateSongTimeManualy();
         }
+        else{
+            if(currPlaylist != null) {
+                int indexCurrSong = currPlaylist.indexOf(currSong);
+                if (indexCurrSong == 0)
+                    play(currPlaylist, currPlaylist.size() - 1);
+                else
+                    play(currPlaylist, indexCurrSong - 1);
+                if (!isMusicPlaying)
+                    stopPlay();
+            }
+        }
     }
     public void btnNextClick(View view){
-        mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 3000);
+        if(currPlaylist!= null) {
+            int indexCurrSong = currPlaylist.indexOf(currSong);
+            if (indexCurrSong == currPlaylist.size() - 1) {
+                if (!isMusicPlaying) {
+                    play(currPlaylist, 0);
+                    stopPlay();
+                } else
+                    play(currPlaylist, 0);
+                if (!isLooping)
+                    stopPlay();
+            } else{
+                if(!isMusicPlaying) {
+                    play(currPlaylist, indexCurrSong + 1);
+                    stopPlay();
+                } else
+                    play(currPlaylist, indexCurrSong + 1);
+            }
+        }
     }
 
     public void btnLoopClick(View view){
+        //TODO : 02.03.18 one song looping
         if (isLooping) {
             btnLoop.setImageResource(R.drawable.loop_off);
-            mediaPlayer.setLooping(false);
+            //mediaPlayer.setLooping(false);
         }
         else {
             btnLoop.setImageResource(R.drawable.loop_on);
-            mediaPlayer.setLooping(true);
+            //mediaPlayer.setLooping(true);
         }
         isLooping = !isLooping;
     }
