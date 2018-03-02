@@ -35,16 +35,19 @@ public class AlbumAdapter extends BaseAdapter {
     @Override
     public Object getItem(int arg0) {
         // TODO Auto-generated method stub
+        //wtf is this method
         return null;
     }
 
     @Override
     public long getItemId(int arg0) {
         // TODO Auto-generated method stub
+        //wtf is this method
         return 0;
     }
 
     //ПРОБЛЕМА С ОБЛОЖКОЙ - В КЛАССЕ ХРАНИТСЯ В ImageView, НАДО КАК-ТО ЗАБРАТЬ  Drawable ИЗ НЕГО
+    // TODO: начал делать с обложкой что-то здесь, разобраться
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout

@@ -102,18 +102,9 @@ public class PlayerActivity extends Activity {
         });
     }
 
-    public void btnPlayClick(View view){
-        if(currPlaylist == null) {
-            Toast.makeText(this, "Сначала нужно выбрать трек!", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            if (isMusicPlaying)
-                pausePlay();
-            else
-                resumePlay();
-        }
-    }
-
+    /*
+     * MEDIAPLAYER LOGIC
+     */
     public void play(ArrayList<Song> songs, int position){
         isMusicPlaying = true;
         mediaPlayer.stop();
@@ -150,7 +141,33 @@ public class PlayerActivity extends Activity {
             }
         });
     }
+    public void pausePlay(){
+        mediaPlayer.pause();
+        isMusicPlaying = false;
+        btnPlay.setImageResource(R.drawable.play);
+    }
+    public void resumePlay(){
+        mediaPlayer.start();
+        isMusicPlaying = true;
+        btnPlay.setImageResource(R.drawable.pause);
+        myHandler.postDelayed(UpdateSongTime,100);
+    }
+    private void stopPlay(){
+        mediaPlayer.stop();
+        isMusicPlaying = false;
+        btnPlay.setImageResource(R.drawable.play);
+        try {
+            mediaPlayer.prepare();
+            mediaPlayer.seekTo(0);
+        }
+        catch (Throwable t) {
+            Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    /*
+     * INTERFACE LOGIC
+     */
     public void prepareInterface(Song song){
         if(isMusicPlaying)
             btnPlay.setImageResource(R.drawable.pause);
@@ -188,31 +205,6 @@ public class PlayerActivity extends Activity {
         if(isMusicPlaying)
             myHandler.postDelayed(UpdateSongTime,100);
     }
-
-    public void pausePlay(){
-        mediaPlayer.pause();
-        isMusicPlaying = false;
-        btnPlay.setImageResource(R.drawable.play);
-    }
-    public void resumePlay(){
-        mediaPlayer.start();
-        isMusicPlaying = true;
-        btnPlay.setImageResource(R.drawable.pause);
-        myHandler.postDelayed(UpdateSongTime,100);
-    }
-    private void stopPlay(){
-        mediaPlayer.stop();
-        isMusicPlaying = false;
-        btnPlay.setImageResource(R.drawable.play);
-        try {
-            mediaPlayer.prepare();
-            mediaPlayer.seekTo(0);
-        }
-        catch (Throwable t) {
-            Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void UpdateSongTimeManualy(){
         startTime = mediaPlayer.getCurrentPosition();
         //defense for 0-9 seconds position for string like 1:9, should be 1:09
@@ -246,6 +238,20 @@ public class PlayerActivity extends Activity {
         }
     };
 
+    /*
+     * BUTTON LOGIC
+     */
+    public void btnPlayClick(View view){
+        if(currPlaylist == null) {
+            Toast.makeText(this, "Сначала нужно выбрать трек!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (isMusicPlaying)
+                pausePlay();
+            else
+                resumePlay();
+        }
+    }
     public void btnPrevClick(View view){
         if (mediaPlayer.getCurrentPosition() > 1500) {
             mediaPlayer.seekTo(0);
@@ -283,16 +289,13 @@ public class PlayerActivity extends Activity {
             }
         }
     }
-
     public void btnLoopClick(View view){
         //TODO : 02.03.18 one song looping
         if (isLooping) {
             btnLoop.setImageResource(R.drawable.loop_off);
-            //mediaPlayer.setLooping(false);
         }
         else {
             btnLoop.setImageResource(R.drawable.loop_on);
-            //mediaPlayer.setLooping(true);
         }
         isLooping = !isLooping;
     }
@@ -303,13 +306,16 @@ public class PlayerActivity extends Activity {
             btnRand.setImageResource(R.drawable.rand_on);
         isRandom = !isRandom;
     }
-
     public void btnBack(View view){
 
         Intent intent = new Intent(PlayerActivity.this, SongListActivity.class);
         startActivity(intent);
     }
 
+
+    /*
+     * SYSTEM LOGIC
+     */
     private void checkPermission(){
         int requestCode = 0;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -324,7 +330,6 @@ public class PlayerActivity extends Activity {
             }
         }
     }
-
     @Override
     protected void onDestroy() {
         isApplicationDestroying = true;

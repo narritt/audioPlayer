@@ -61,4 +61,7 @@ public class FileMaster {
         }
         return song;
     }
+    // TODO : 02.03.18 saving and reading curent playlist
+
+    // TODO : 02.03.18 creating and reading user playlist
 }
