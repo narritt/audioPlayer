@@ -87,7 +87,6 @@ public class FileMaster {
         }
     }
     protected PlayerCurrentState readCurrentPlaylist(){
-        Log.i(TAG, "Trying to read current playlist");
         ArrayList<Song> songs = new ArrayList<>();
         int currPosition = 0;
         try {
@@ -112,7 +111,7 @@ public class FileMaster {
         } catch (FileNotFoundException e) {
             Log.e(TAG, "CURRENT SONG FILE NOT FOUND WHILE READING: " + e.getMessage());
         } catch (Exception e) {
-            Log.e(TAG, "Freaking exception: " + e.getMessage());
+            Log.e(TAG, "Freaking exception while reading current playlist : " + e.getMessage());
         }
         if(songs.isEmpty())
             songs = null;
