@@ -25,17 +25,12 @@ public class PlayerActivity extends Activity {
     static PlayerActivity instance;
 
     public static MediaPlayer mediaPlayer;
-    Song currSong;
-    ArrayList<Song> currPlaylist;
+    public PlayerCurrentState playerState = new PlayerCurrentState();
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     SeekBar progressControl;
     double startTime, finalTime;
-    boolean isMusicPlaying = false,
-            isApplicationDestroying = false,
-            isRandom,
-            isLooping;
 
     FileMaster fileMaster;
     Handler myHandler = new Handler();
@@ -62,15 +57,14 @@ public class PlayerActivity extends Activity {
         currentSongPosition = (TextView) findViewById(R.id.strCurrentSongPosition);
         progressControl = (SeekBar) findViewById(R.id.progressControl);
 
-        //getting written curent song from file
+        //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
-        currSong = fileMaster.readCurrentSong();
-        //currPlaylist = fileMaster.readCurrentPlaylist;
-        if (currSong == null)
+        playerState.setCurrentPlaylistAndSong(fileMaster.readCurrentPlaylist());
+        if (playerState.getCurrentSong() == null)
             mediaPlayer = MediaPlayer.create(this, R.raw.music);
         else {
-            mediaPlayer = MediaPlayer.create(this, currSong.getPath());
-            prepareInterface(currSong);
+            mediaPlayer = MediaPlayer.create(this, playerState.getCurrentSong().getPath());
+            prepareInterface(playerState.getCurrentSong());
         }
 
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -106,36 +100,35 @@ public class PlayerActivity extends Activity {
      * MEDIAPLAYER LOGIC
      */
     public void play(ArrayList<Song> songs, int position){
-        isMusicPlaying = true;
+        playerState.isMusicPlaying = true;
         mediaPlayer.stop();
+        playerState.setCurrentPlaylistAndSong(songs, position);
         mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
-        currPlaylist = songs;
-        currSong = songs.get(position);
         mediaPlayer.start();
         prepareInterface(songs.get(position));
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Log.i(TAG, "Track is completed");
-                if(currPlaylist == null) {
+                if(playerState.getCurrentPlaylist() == null) {
                     Log.i(TAG, "MP.onCompletion : currPlayList is empty.");
                     stopPlay();
                 } else {
-                    int indexCurrSong = currPlaylist.indexOf(currSong);
-                    if(!isRandom) {
-                        if (indexCurrSong >= currPlaylist.size() - 1) {
-                            if(isLooping)
-                                play(currPlaylist, 0);
+                    int indexCurrSong = playerState.getCurrentSongIndex();
+                    if(!playerState.isRandom) {
+                        if (indexCurrSong >= playerState.getPlaylistSize() - 1) {
+                            if(playerState.isLooping)
+                                play(playerState.getCurrentPlaylist(), 0);
                             else {
-                                play(currPlaylist, 0);
+                                play(playerState.getCurrentPlaylist(), 0);
                                 stopPlay();
                             }
                         }
                         else
-                            play(currPlaylist, indexCurrSong + 1);
+                            play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
                     } else {
                         // TODO : 02.03.18 create normal randomizer
-                        play(currPlaylist, new Random().nextInt(currPlaylist.size()));
+                        play(playerState.getCurrentPlaylist(), new Random().nextInt(playerState.getPlaylistSize()));
                     }
                 }
             }
@@ -143,18 +136,18 @@ public class PlayerActivity extends Activity {
     }
     public void pausePlay(){
         mediaPlayer.pause();
-        isMusicPlaying = false;
+        playerState.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
     }
     public void resumePlay(){
         mediaPlayer.start();
-        isMusicPlaying = true;
+        playerState.isMusicPlaying = true;
         btnPlay.setImageResource(R.drawable.pause);
         myHandler.postDelayed(UpdateSongTime,100);
     }
     private void stopPlay(){
         mediaPlayer.stop();
-        isMusicPlaying = false;
+        playerState.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
         try {
             mediaPlayer.prepare();
@@ -169,7 +162,7 @@ public class PlayerActivity extends Activity {
      * INTERFACE LOGIC
      */
     public void prepareInterface(Song song){
-        if(isMusicPlaying)
+        if(playerState.isMusicPlaying)
             btnPlay.setImageResource(R.drawable.pause);
         else
             btnPlay.setImageResource(R.drawable.play);
@@ -202,7 +195,7 @@ public class PlayerActivity extends Activity {
 
         progressControl.setMax((int)finalTime);
         progressControl.setProgress((int)startTime);
-        if(isMusicPlaying)
+        if(playerState.isMusicPlaying)
             myHandler.postDelayed(UpdateSongTime,100);
     }
     private void UpdateSongTimeManualy(){
@@ -221,7 +214,7 @@ public class PlayerActivity extends Activity {
     private Runnable UpdateSongTime = new Runnable() {
         @Override
         public void run() {
-            if(!isApplicationDestroying) {
+            if(!playerState.isApplicationDestroying) {
                 startTime = mediaPlayer.getCurrentPosition();
                 //defense for 0-9 seconds position for string like 1:9, should be 1:09
                 if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
@@ -242,11 +235,11 @@ public class PlayerActivity extends Activity {
      * BUTTON LOGIC
      */
     public void btnPlayClick(View view){
-        if(currPlaylist == null) {
+        if(/*currPlaylist*/ playerState.getCurrentPlaylist() == null) {
             Toast.makeText(this, "Сначала нужно выбрать трек!", Toast.LENGTH_SHORT).show();
         }
         else {
-            if (isMusicPlaying)
+            if (playerState.isMusicPlaying)
                 pausePlay();
             else
                 resumePlay();
@@ -258,53 +251,53 @@ public class PlayerActivity extends Activity {
             UpdateSongTimeManualy();
         }
         else{
-            if(currPlaylist != null) {
-                int indexCurrSong = currPlaylist.indexOf(currSong);
+            if(playerState.getCurrentPlaylist() != null) {
+                int indexCurrSong = playerState.getCurrentSongIndex();
                 if (indexCurrSong == 0)
-                    play(currPlaylist, currPlaylist.size() - 1);
+                    play(playerState.getCurrentPlaylist(), playerState.getPlaylistSize() - 1);
                 else
-                    play(currPlaylist, indexCurrSong - 1);
-                if (!isMusicPlaying)
+                    play(playerState.getCurrentPlaylist(), indexCurrSong - 1);
+                if (!playerState.isMusicPlaying)
                     stopPlay();
             }
         }
     }
     public void btnNextClick(View view){
-        if(currPlaylist!= null) {
-            int indexCurrSong = currPlaylist.indexOf(currSong);
-            if (indexCurrSong == currPlaylist.size() - 1) {
-                if (!isMusicPlaying) {
-                    play(currPlaylist, 0);
+        if(playerState.getCurrentPlaylist() != null) {
+            int indexCurrSong = playerState.getCurrentSongIndex(); //currPlaylist.indexOf(currSong);
+            if (indexCurrSong == playerState.getPlaylistSize() - 1) {
+                if (!playerState.isMusicPlaying) {
+                    play(playerState.getCurrentPlaylist(), 0);
                     stopPlay();
                 } else
-                    play(currPlaylist, 0);
-                if (!isLooping)
+                    play(playerState.getCurrentPlaylist(), 0);
+                if (!playerState.isLooping)
                     stopPlay();
             } else{
-                if(!isMusicPlaying) {
-                    play(currPlaylist, indexCurrSong + 1);
+                if(!playerState.isMusicPlaying) {
+                    play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
                     stopPlay();
                 } else
-                    play(currPlaylist, indexCurrSong + 1);
+                    play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
             }
         }
     }
     public void btnLoopClick(View view){
         //TODO : 02.03.18 one song looping
-        if (isLooping) {
+        if (playerState.isLooping) {
             btnLoop.setImageResource(R.drawable.loop_off);
         }
         else {
             btnLoop.setImageResource(R.drawable.loop_on);
         }
-        isLooping = !isLooping;
+        playerState.isLooping = !playerState.isLooping;
     }
     public void btnRandClick(View view){
-        if (isRandom)
+        if (playerState.isRandom)
             btnRand.setImageResource(R.drawable.rand_off);
         else
             btnRand.setImageResource(R.drawable.rand_on);
-        isRandom = !isRandom;
+        playerState.isRandom = !playerState.isRandom;
     }
     public void btnBack(View view){
 
@@ -332,10 +325,11 @@ public class PlayerActivity extends Activity {
     }
     @Override
     protected void onDestroy() {
-        isApplicationDestroying = true;
+        playerState.isApplicationDestroying = true;
         releaseMP();
         Log.i(TAG, "On destroy, trying to write current song");
-        fileMaster.writeCurrentSong(currSong);
+        //fileMaster.writeCurrentSong(playerState.getCurrentSong());
+        fileMaster.writeCurrentPlaylist(playerState);
         super.onDestroy();
     }
 
