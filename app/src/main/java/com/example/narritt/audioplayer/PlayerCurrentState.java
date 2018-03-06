@@ -1,5 +1,7 @@
 package com.example.narritt.audioplayer;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -7,6 +9,7 @@ import java.util.ArrayList;
  */
 
 public class PlayerCurrentState {
+    private static final String TAG = "MyAudioPlayer";
     private ArrayList<Song> currentPlaylist;
     private Song currentSong;
 
@@ -77,7 +80,14 @@ public class PlayerCurrentState {
     }
     public void setCurrentPlaylistAndSong(ArrayList<Song> songList, int pos){
         this.currentPlaylist = songList;
-        this.currentSong = songList.get(pos);
+        //Log.i(TAG, "PlayerCurrentState, setCurrentPlaylistAndSong, songlist is null : " + Boolean.toString(songList == null ? true : false));
+        if(songList != null) {
+            this.currentSong = songList.get(pos);
+        }
+        else{
+            currentSong = null;
+            Log.e(TAG, "PlayerCurrentState, setCurrentPlaylistAndSong ERROR: playlist = null");
+        }
     }
     public void setCurrentPlaylistAndSong(PlayerCurrentState plState){
         this.currentPlaylist = plState.getCurrentPlaylist();

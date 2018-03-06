@@ -40,7 +40,7 @@ public class PlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        Log.i(TAG, "OnCreate in " + this.getLocalClassName());
+        //Log.i(TAG, "OnCreate in " + this.getLocalClassName());
         instance = this;
         checkPermission();
 
@@ -324,12 +324,15 @@ public class PlayerActivity extends Activity {
         }
     }
     @Override
+    protected void onStop() {
+        fileMaster.writeCurrentPlaylist(playerState);
+        super.onStop();
+    }
+    @Override
     protected void onDestroy() {
+        Log.i(TAG, "On destroy, trying to write current playlist");
         playerState.isApplicationDestroying = true;
         releaseMP();
-        Log.i(TAG, "On destroy, trying to write current song");
-        //fileMaster.writeCurrentSong(playerState.getCurrentSong());
-        fileMaster.writeCurrentPlaylist(playerState);
         super.onDestroy();
     }
 
