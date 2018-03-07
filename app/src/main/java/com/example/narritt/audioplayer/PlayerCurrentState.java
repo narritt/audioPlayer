@@ -54,19 +54,6 @@ public class PlayerCurrentState {
         return currentPlaylist.indexOf(currentSong);
     }
 
-    /*public boolean isMusicPlaying(){
-        return isMusicPlaying;
-    }
-    public boolean isApplicationDestroying() {
-        return isApplicationDestroying;
-    }
-    public boolean isRandom(){
-        return isRandom;
-    }
-    public boolean isLooping(){
-        return isLooping;
-    }*/
-
     //++++ SETTERS ++++
     public void setCurrentPlaylist(ArrayList<Song> songList){
         this.currentPlaylist = songList;

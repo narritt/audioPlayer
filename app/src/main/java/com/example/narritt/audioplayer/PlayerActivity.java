@@ -134,6 +134,14 @@ public class PlayerActivity extends Activity {
             }
         });
     }
+    public void playDependingOn_isMusicPlaying(ArrayList<Song> playlist, int pos){
+        if(playerState.isMusicPlaying)
+            play(playlist, pos);
+        else{
+            play(playlist, pos);
+            stopPlay();
+        }
+    }
     public void pausePlay(){
         mediaPlayer.pause();
         playerState.isMusicPlaying = false;
@@ -249,36 +257,26 @@ public class PlayerActivity extends Activity {
         if (mediaPlayer.getCurrentPosition() > 1500) {
             mediaPlayer.seekTo(0);
             UpdateSongTimeManualy();
-        }
-        else{
+        } else {
             if(playerState.getCurrentPlaylist() != null) {
                 int indexCurrSong = playerState.getCurrentSongIndex();
-                if (indexCurrSong == 0)
-                    play(playerState.getCurrentPlaylist(), playerState.getPlaylistSize() - 1);
-                else
-                    play(playerState.getCurrentPlaylist(), indexCurrSong - 1);
-                if (!playerState.isMusicPlaying)
-                    stopPlay();
+                if (indexCurrSong == 0) {
+                    playDependingOn_isMusicPlaying(playerState.getCurrentPlaylist(), playerState.getPlaylistSize() - 1);
+                } else {
+                    playDependingOn_isMusicPlaying(playerState.getCurrentPlaylist(), indexCurrSong - 1);
+                }
             }
         }
     }
     public void btnNextClick(View view){
         if(playerState.getCurrentPlaylist() != null) {
-            int indexCurrSong = playerState.getCurrentSongIndex(); //currPlaylist.indexOf(currSong);
-            if (indexCurrSong == playerState.getPlaylistSize() - 1) {
-                if (!playerState.isMusicPlaying) {
-                    play(playerState.getCurrentPlaylist(), 0);
-                    stopPlay();
-                } else
-                    play(playerState.getCurrentPlaylist(), 0);
+            int indexCurrSong = playerState.getCurrentSongIndex();
+            if (indexCurrSong == playerState.getPlaylistSize() - 1) {   //if this is last song of playlist
+                playDependingOn_isMusicPlaying(playerState.getCurrentPlaylist(), 0);
                 if (!playerState.isLooping)
                     stopPlay();
-            } else{
-                if(!playerState.isMusicPlaying) {
-                    play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
-                    stopPlay();
-                } else
-                    play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
+            } else {
+                playDependingOn_isMusicPlaying(playerState.getCurrentPlaylist(), indexCurrSong + 1);
             }
         }
     }
@@ -336,8 +334,7 @@ public class PlayerActivity extends Activity {
         super.onDestroy();
     }
 
-    /*  Освобождает используемые проигрывателем ресурсы, его рекомендуется вызывать когда вы закончили работу с плеером.
-        Более того, хелп рекомендует вызывать этот метод и при onPause/onStop, если нет острой необходимости держать объект.    */
+    /*  Освобождает используемые проигрывателем ресурсы */
     private void releaseMP() {
         if (mediaPlayer != null) {
             stopPlay();
