@@ -41,6 +41,15 @@ public class Song {
     protected String getArtist(){return artist;}
     protected int getPosition() {return position;}
     protected Uri getPath()  {return Uri.parse("file://" + path);}
+    public Uri getFolderPath(){
+        Log.i(TAG, "getFolderPath: Song path is " + path);
+        String folderPath = path.substring(0, path.lastIndexOf("/"));
+        Log.i(TAG, "getFolderPath: Folder path is " + folderPath);
+        return Uri.parse("file://" + folderPath);
+    }
+    public String getFolderPathString(){
+        return path.substring(0, path.lastIndexOf("/"));
+    }
 
     public String toString(){
         return ("ID:" + this.id +

@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +15,12 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +34,7 @@ public class PlayerActivity extends Activity {
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
+    ImageView imgAlbum;
     SeekBar progressControl;
     double startTime, finalTime;
 
@@ -57,6 +62,7 @@ public class PlayerActivity extends Activity {
         songDuration = (TextView) findViewById(R.id.strSongDuration);
         currentSongPosition = (TextView) findViewById(R.id.strCurrentSongPosition);
         progressControl = (SeekBar) findViewById(R.id.progressControl);
+        imgAlbum = (ImageView) findViewById(R.id.imgAlbum);
 
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
@@ -210,8 +216,29 @@ public class PlayerActivity extends Activity {
             myHandler.postDelayed(UpdateSongTime,100);
     }
     public void loadAlbumCover(Song song){
-        //Uri folderPath = song.getFolderPath();
-        //Log.i(TAG, "Loading cover, folder path is " + folderPath);
+        String folderPath = song.getFolderPathString();
+        Log.i(TAG, "Loading cover, folder path is " + folderPath);
+        File dir = new File(folderPath);
+        boolean coverFound = false;
+        for (File file : dir.listFiles()) {
+            String fileName = file.getName().toLowerCase();
+            /*
+              * Необходима сторонняя библиотека для чтения данных
+              * из ID3 тегов. Можно использовать библиотеку сразу для записи,
+              * как, например Jaudiotagger (http://www.jthink.net/jaudiotagger/),
+              * с этим надо разобраться.
+              * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
+             */
+            if (fileName.contains("cover.jpg")){
+                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                imgAlbum.setImageBitmap(myBitmap);
+                coverFound = true;
+                break;
+            }
+        }
+        if(!coverFound){
+            imgAlbum.setImageResource(R.drawable.note);
+        }
     }
     private void UpdateSongTimeManualy(){
         startTime = mediaPlayer.getCurrentPosition();
