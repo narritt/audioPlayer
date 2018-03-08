@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -182,6 +183,8 @@ public class PlayerActivity extends Activity {
         startTime = mediaPlayer.getCurrentPosition();
         finalTime = mediaPlayer.getDuration();
 
+        loadAlbumCover(song);
+
         //defense for 0-9 seconds duration and position for string like 1:9, should be 1:09
         if((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
             songDuration.setText(String.format("%d:0%d",
@@ -205,6 +208,10 @@ public class PlayerActivity extends Activity {
         progressControl.setProgress((int)startTime);
         if(playerState.isMusicPlaying)
             myHandler.postDelayed(UpdateSongTime,100);
+    }
+    public void loadAlbumCover(Song song){
+        //Uri folderPath = song.getFolderPath();
+        //Log.i(TAG, "Loading cover, folder path is " + folderPath);
     }
     private void UpdateSongTimeManualy(){
         startTime = mediaPlayer.getCurrentPosition();
@@ -297,12 +304,15 @@ public class PlayerActivity extends Activity {
             btnRand.setImageResource(R.drawable.rand_on);
         playerState.isRandom = !playerState.isRandom;
     }
-    public void btnBack(View view){
-
+    public void btnToArtists(View view){
         Intent intent = new Intent(PlayerActivity.this, SongListActivity.class);
         startActivity(intent);
     }
-
+    public void btnToPlaylists(View view){
+        /*Intent intent = new Intent(PlayerActivity.this, SongListActivity.class);
+        startActivity(intent);*/
+        Toast.makeText(this, "There will be playlist activity someday", Toast.LENGTH_SHORT).show();
+    }
 
     /*
      * SYSTEM LOGIC

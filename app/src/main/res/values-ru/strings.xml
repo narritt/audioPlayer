@@ -7,4 +7,6 @@
     <string name="chbLoop">Loop</string>
     <string name="allSongsFromArtistList">Все песни</string>
     <string name="backToPlayer">Назад</string>
+    <string name="toArtists">Артисты</string>
+    <string name="toPlaylists">Плейлисты</string>
 </resources>

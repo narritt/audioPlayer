@@ -6,4 +6,6 @@
     <string name="chbLoop">Loop</string>
     <string name="allSongsFromArtistList">All songs</string>
     <string name="backToPlayer">Back</string>
+    <string name="toArtists">To artists</string>
+    <string name="toPlaylists">To playlists</string>
 </resources>
