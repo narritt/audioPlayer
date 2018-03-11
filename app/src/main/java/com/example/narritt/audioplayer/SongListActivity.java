@@ -1,8 +1,6 @@
 package com.example.narritt.audioplayer;
 
 import android.app.Activity;
-import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,13 +9,19 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.narritt.audioplayer.adapters.AlbumAdapter;
+import com.example.narritt.audioplayer.adapters.ArtistAdapter;
+import com.example.narritt.audioplayer.adapters.SongAdapter;
+import com.example.narritt.audioplayer.items.Album;
+import com.example.narritt.audioplayer.items.Artist;
+import com.example.narritt.audioplayer.items.Song;
 
 public class SongListActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";

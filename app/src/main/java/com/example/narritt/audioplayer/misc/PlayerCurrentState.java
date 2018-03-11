@@ -1,12 +1,10 @@
-package com.example.narritt.audioplayer;
+package com.example.narritt.audioplayer.misc;
 
 import android.util.Log;
 
-import java.util.ArrayList;
+import com.example.narritt.audioplayer.items.Song;
 
-/**
- * Created by Narritt on 03.03.2018.
- */
+import java.util.ArrayList;
 
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";

@@ -1,4 +1,4 @@
-package com.example.narritt.audioplayer;
+package com.example.narritt.audioplayer.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.narritt.audioplayer.R;
+import com.example.narritt.audioplayer.items.Artist;
 
 import java.util.ArrayList;
 

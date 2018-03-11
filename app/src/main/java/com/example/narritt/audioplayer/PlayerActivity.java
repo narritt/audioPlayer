@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.narritt.audioplayer.items.Song;
+import com.example.narritt.audioplayer.misc.FileMaster;
+import com.example.narritt.audioplayer.misc.PlayerCurrentState;
 
 import java.io.File;
 import java.util.ArrayList;

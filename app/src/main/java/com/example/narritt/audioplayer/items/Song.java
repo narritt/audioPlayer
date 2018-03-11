@@ -1,4 +1,4 @@
-package com.example.narritt.audioplayer;
+package com.example.narritt.audioplayer.items;
 
 import android.net.Uri;
 import android.util.Log;
@@ -17,7 +17,7 @@ public class Song {
     private int position;
     private String path;
 
-    protected Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath) {
+    public Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath) {
         id = songID;
         title = songTitle;
         album = songAlbum;
@@ -25,7 +25,7 @@ public class Song {
         position = songPosition;
         path = songPath;
     }
-    protected Song(String data){
+    public Song(String data){
         Song tmpSong = this.toSong(data);
         id = tmpSong.id;
         title = tmpSong.title;
@@ -37,10 +37,10 @@ public class Song {
 
     public long getID(){return id;}
     public String getTitle(){return title;}
-    protected String getAlbum() {return album;}
-    protected String getArtist(){return artist;}
-    protected int getPosition() {return position;}
-    protected Uri getPath()  {return Uri.parse("file://" + path);}
+    public String getAlbum() {return album;}
+    public String getArtist(){return artist;}
+    public int getPosition() {return position;}
+    public Uri getPath()  {return Uri.parse("file://" + path);}
     public Uri getFolderPath(){
         Log.i(TAG, "getFolderPath: Song path is " + path);
         String folderPath = path.substring(0, path.lastIndexOf("/"));

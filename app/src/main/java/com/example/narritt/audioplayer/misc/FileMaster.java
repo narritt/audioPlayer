@@ -1,8 +1,9 @@
-package com.example.narritt.audioplayer;
+package com.example.narritt.audioplayer.misc;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.example.narritt.audioplayer.items.Song;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,13 +22,13 @@ public class FileMaster {
     private String currentPlaylistFileName  = "CurrentPlaylist.txt";
     private File  currentPlaylistFile;
 
-    protected FileMaster(Context ctx){
+    public FileMaster(Context ctx){
         context = ctx;
         currentPlaylistFile = new File(context.getFilesDir() + currentPlaylistFileName);
         //Log.i(TAG, "Create a FileMaster, context:  " + ctx.toString() + "; FilesDir path: "  + ctx.getFilesDir());
     }
 
-    protected void writeCurrentPlaylist(PlayerCurrentState plState){
+    public void writeCurrentPlaylist(PlayerCurrentState plState){
         try {
             //Log.i(TAG, "Trying to create current playlist file");
             currentPlaylistFile.createNewFile();    //if it does not exist
@@ -48,7 +49,7 @@ public class FileMaster {
             Log.e(TAG, "ERROR WRITING CURRENT PLAYLIST FILE: " + e.toString() + " - " + e.getMessage());
         }
     }
-    protected PlayerCurrentState readCurrentPlaylist(){
+    public PlayerCurrentState readCurrentPlaylist(){
         ArrayList<Song> songs = new ArrayList<>();
         int currPosition = 0;
         try {
