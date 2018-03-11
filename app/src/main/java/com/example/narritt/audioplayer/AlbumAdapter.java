@@ -2,7 +2,9 @@ package com.example.narritt.audioplayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -62,10 +65,32 @@ public class AlbumAdapter extends BaseAdapter {
         albumTitleView.setText(currAlbum.getTitle());
         albumArtistView.setText(currAlbum.getArtist());
         //cover.setImageResource(currAlbum.getCover().getDrawable() );
-        cover.setImageResource(R.drawable.note);
+
+
+        //cover.setImageResource(R.drawable.note);
+        loadAlbumCover(currAlbum, cover);
+
         //set position as tag
         albumLay.setTag(position);
         return albumLay;
+    }
+    public void loadAlbumCover(Album album, ImageView cover){
+        File dir = new File(album.getPath());
+        boolean coverFound = false;
+        for (File file : dir.listFiles()) {
+            String fileName = file.getName().toLowerCase();
+            /* Полная инфа в аналогичном методе playerActivity */
+            if (fileName.contains("cover.jpg")){
+                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                cover.setImageBitmap(myBitmap);
+                coverFound = true;
+                break;
+            }
+        }
+        if(!coverFound){
+            //cover.setImageResource(R.drawable.note);
+            cover.setImageResource(R.drawable.octave_wb);
+        }
     }
 
 }

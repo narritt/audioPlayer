@@ -2,6 +2,8 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import static android.app.Notification.FLAG_ONGOING_EVENT;
+
 public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
     static PlayerActivity instance;
@@ -41,12 +45,14 @@ public class PlayerActivity extends Activity {
     FileMaster fileMaster;
     Handler myHandler = new Handler();
 
+    NotificationManager nm;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        //Log.i(TAG, "OnCreate in " + this.getLocalClassName());
+        Log.i(TAG, "OnCreate in " + this.getLocalClassName());
         instance = this;
         checkPermission();
 
@@ -101,6 +107,8 @@ public class PlayerActivity extends Activity {
                 }
             }
         });
+
+        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     /*
@@ -140,6 +148,12 @@ public class PlayerActivity extends Activity {
                 }
             }
         });
+        if(playerState.isMusicPlaying){
+            Log.i(TAG, "Pull notification");
+            Notification notif = new Notification(R.mipmap.ic_launcher, "Song", System.currentTimeMillis());
+            notif.flags |= FLAG_ONGOING_EVENT;
+            nm.notify(1, notif);
+        }
     }
     public void playDependingOn_isMusicPlaying(ArrayList<Song> playlist, int pos){
         if(playerState.isMusicPlaying)
@@ -153,6 +167,7 @@ public class PlayerActivity extends Activity {
         mediaPlayer.pause();
         playerState.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
+        nm.cancel(1);
     }
     public void resumePlay(){
         mediaPlayer.start();
@@ -237,7 +252,8 @@ public class PlayerActivity extends Activity {
             }
         }
         if(!coverFound){
-            imgAlbum.setImageResource(R.drawable.note);
+            //imgAlbum.setImageResource(R.drawable.note);
+            imgAlbum.setImageResource(R.mipmap.ic_launcher);
         }
     }
     private void UpdateSongTimeManualy(){

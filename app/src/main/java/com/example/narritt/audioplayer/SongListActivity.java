@@ -1,6 +1,7 @@
 package com.example.narritt.audioplayer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import java.util.ArrayList;
@@ -158,6 +159,8 @@ public class SongListActivity extends Activity {
                     (MediaStore.Audio.Media.TRACK);
             int pathColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DATA);
+            /*int albumIdColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM_ID);*/
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
@@ -165,7 +168,9 @@ public class SongListActivity extends Activity {
                 String thisAlbum = musicCursor.getString(albumColumn);
                 int thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
                 String thisPath = musicCursor.getString(pathColumn);
-                //Log.i(TAG, thisPath);
+                //long albumId = musicCursor.getLong(albumIdColumn);
+                //String coverPath = getCoverArtPath(albumId);
+                //Log.i(TAG, "Cover path is " + coverPath);
 
                 //defense from whatsapp audiorecords and google talk notifications and ringtones
                 if((!thisPath.contains("WhatsApp Audio")) && !thisPath.contains("com.google.android.talk"))
@@ -174,6 +179,22 @@ public class SongListActivity extends Activity {
             while (musicCursor.moveToNext());
         }
     }
+
+    /*private String getCoverArtPath(long albumId) {
+        Cursor albumCursor = getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumId)},
+                null );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
+        }
+        albumCursor.close();
+        return result;
+    }*/
 
     public void getArtistList() {
         for (Song song:songList) {
@@ -191,7 +212,8 @@ public class SongListActivity extends Activity {
             toast.show();
         } else {
             for (Song song : songList) {
-                Album songAlbum = new Album(song.getAlbum(), song.getArtist());
+                //Album songAlbum = new Album(song.getAlbum(), song.getArtist());
+                Album songAlbum = new Album(song);
                 if ((!albumList.contains(songAlbum)) && (songAlbum.getArtist().equals(pickedArtist.getName()))) {
                     albumList.add(songAlbum);
                 }

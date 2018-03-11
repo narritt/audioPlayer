@@ -11,6 +11,7 @@ public class Album {
     private long id;
     private String title;
     private String artist;
+    private String path;
 
     private String genre[];
     private int year;
@@ -31,13 +32,19 @@ public class Album {
         year = 1970;
         //cover.setImageResource(R.drawable.note);
     }
+    public Album(Song song){
+        title = song.getAlbum();
+        artist = song.getArtist();
+        path = song.getFolderPathString();
+    }
 
-    public long getID(){return id;}
-    public String getTitle() {return title;}
-    public String getArtist() {return artist;}
+    public long     getID(){return id;}
+    public String   getTitle() {return title;}
+    public String   getArtist() {return artist;}
     public String[] getGenre() {return genre;}
-    public int getYear() {return year;}
+    public int      getYear() {return year;}
     public ImageView getCover(){return cover;}
+    public String   getPath(){return path;}
 
     @Override
     public boolean equals(Object o){
