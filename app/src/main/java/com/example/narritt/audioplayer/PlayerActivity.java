@@ -2,8 +2,6 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static android.app.Notification.FLAG_ONGOING_EVENT;
+//import static android.app.Notification.FLAG_ONGOING_EVENT;
 
 public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
@@ -45,7 +43,7 @@ public class PlayerActivity extends Activity {
     FileMaster fileMaster;
     Handler myHandler = new Handler();
 
-    NotificationManager nm;
+    //NotificationManager nm;
 
 
     @Override
@@ -108,7 +106,7 @@ public class PlayerActivity extends Activity {
             }
         });
 
-        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     /*
@@ -148,12 +146,12 @@ public class PlayerActivity extends Activity {
                 }
             }
         });
-        if(playerState.isMusicPlaying){
+        /*if(playerState.isMusicPlaying){
             Log.i(TAG, "Pull notification");
             Notification notif = new Notification(R.mipmap.ic_launcher, "Song", System.currentTimeMillis());
             notif.flags |= FLAG_ONGOING_EVENT;
             nm.notify(1, notif);
-        }
+        }*/
     }
     public void playDependingOn_isMusicPlaying(ArrayList<Song> playlist, int pos){
         if(playerState.isMusicPlaying)
@@ -167,7 +165,7 @@ public class PlayerActivity extends Activity {
         mediaPlayer.pause();
         playerState.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
-        nm.cancel(1);
+        //nm.cancel(1);
     }
     public void resumePlay(){
         mediaPlayer.start();
@@ -231,19 +229,19 @@ public class PlayerActivity extends Activity {
             myHandler.postDelayed(UpdateSongTime,100);
     }
     public void loadAlbumCover(Song song){
+        /*
+         * Необходима сторонняя библиотека для чтения данных
+         * из ID3 тегов. Можно использовать библиотеку сразу для записи,
+         * как, например Jaudiotagger (http://www.jthink.net/jaudiotagger/),
+         * с этим надо разобраться.
+         * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
+         */
         String folderPath = song.getFolderPathString();
         Log.i(TAG, "Loading cover, folder path is " + folderPath);
         File dir = new File(folderPath);
         boolean coverFound = false;
         for (File file : dir.listFiles()) {
             String fileName = file.getName().toLowerCase();
-            /*
-              * Необходима сторонняя библиотека для чтения данных
-              * из ID3 тегов. Можно использовать библиотеку сразу для записи,
-              * как, например Jaudiotagger (http://www.jthink.net/jaudiotagger/),
-              * с этим надо разобраться.
-              * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
-             */
             if (fileName.contains("cover.jpg")){
                 Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                 imgAlbum.setImageBitmap(myBitmap);
@@ -252,8 +250,7 @@ public class PlayerActivity extends Activity {
             }
         }
         if(!coverFound){
-            //imgAlbum.setImageResource(R.drawable.note);
-            imgAlbum.setImageResource(R.mipmap.ic_launcher);
+            imgAlbum.setImageResource(R.drawable.octave_max);
         }
     }
     private void UpdateSongTimeManualy(){
