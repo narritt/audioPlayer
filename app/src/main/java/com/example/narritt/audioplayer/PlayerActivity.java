@@ -77,9 +77,7 @@ public class PlayerActivity extends Activity {
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
         playerState.setCurrentPlaylistAndSong(fileMaster.readCurrentPlaylist());
-        if (playerState.getCurrentSong() == null)
-            mediaPlayer = MediaPlayer.create(this, R.raw.music);
-        else {
+        if (playerState.getCurrentSong() != null) {
             mediaPlayer = MediaPlayer.create(this, playerState.getCurrentSong().getPath());
             prepareInterface(playerState.getCurrentSong());
         }
@@ -249,8 +247,10 @@ public class PlayerActivity extends Activity {
         if( coverArtPath != null) {
             File imgFile = new File(coverArtPath);
             Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imgAlbum.setImageBitmap(bmp);
-            coverFound = true;
+            if(bmp != null) {
+                imgAlbum.setImageBitmap(bmp);
+                coverFound = true;
+            }
         }
 
         if(!coverFound) {

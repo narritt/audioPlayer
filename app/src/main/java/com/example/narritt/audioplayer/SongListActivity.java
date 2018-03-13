@@ -166,7 +166,6 @@ public class SongListActivity extends Activity {
                     (MediaStore.Audio.Media.DATA);
             int albumIdColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM_ID);
-            Log.i(TAG, "getSongList: albumIdColumn is " + albumIdColumn);
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);

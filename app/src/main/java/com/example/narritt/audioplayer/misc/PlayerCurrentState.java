@@ -34,22 +34,26 @@ public class PlayerCurrentState {
     }
 
     //++++ GETTERS ++++
-    public ArrayList<Song> getCurrentPlaylist(){
+    public ArrayList<Song>  getCurrentPlaylist(){
         return currentPlaylist;
     }
-    public Song getCurrentSong(){
+    public Song             getCurrentSong(){
         return currentSong;
     }
-    public Song getSong(int pos) {
+    public Song             getSong(int pos) {
         return currentPlaylist.get(pos);
     }
-    public int getPlaylistSize(){
+    public int              getPlaylistSize(){
         if (currentPlaylist != null)
             return currentPlaylist.size();
         else return 0;
     }
-    public int getCurrentSongIndex(){
+    public int              getCurrentSongIndex(){
         return currentPlaylist.indexOf(currentSong);
+    }
+    public long             getCurrentAlbumID() {
+        Log.i(TAG, "Current album id is " + currentSong.getAlbumId());
+        return currentSong.getAlbumId();
     }
 
     //++++ SETTERS ++++

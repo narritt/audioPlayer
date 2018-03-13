@@ -84,14 +84,13 @@ public class AlbumAdapter extends BaseAdapter {
         String coverArtPath = getCoverArtPath(album.getID());
 
         if( coverArtPath != null) {
-            Log.i(TAG, "loadAlbumCover: coverArtPath is " + coverArtPath + "; album is " + album.getTitle() );
             File imgFile = new File(coverArtPath);
             Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             if(bmp != null) {
                 cover.setImageBitmap(bmp);
                 coverFound = true;
             }
-        } else Log.i(TAG, "AlbumAdapter: getCoverArtPath returns null");
+        }
 
         if(!coverFound) {
             File dir = new File(album.getPath());
