@@ -8,6 +8,6 @@
     <dimen name="progresscontrol_margin_horizontal">-16dp</dimen>
     <dimen name="progresscontrol_margin_top">-10dp</dimen>
     <dimen name="timestamp_margin_horizontal">5dp</dimen>
-    <dimen name="controlbuttons_margin_bottom">5dp</dimen>
+    <dimen name="controlbuttons_margin_bottom">25dp</dimen>
     <dimen name="controlbuttons_margin_between">3dp</dimen>
 </resources>

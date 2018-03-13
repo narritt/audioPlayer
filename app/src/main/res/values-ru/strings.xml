@@ -9,4 +9,9 @@
     <string name="backToPlayer">Назад</string>
     <string name="toArtists">Артисты</string>
     <string name="toPlaylists">Плейлисты</string>
+    <string name="artistname_default_string">Привет!</string>
+    <string name="albumname_default_string">Настало время выбрать</string>
+    <string name="songname_default_string">вашу первую песню!</string>
+    <string name="timestamp_track_start">0:00</string>
+    <string name="timestamp_track_end">0:00</string>
 </resources>

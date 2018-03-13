@@ -8,4 +8,9 @@
     <string name="backToPlayer">Back</string>
     <string name="toArtists">To artists</string>
     <string name="toPlaylists">To playlists</string>
+    <string name="artistname_default_string">Hello!</string>
+    <string name="albumname_default_string">It\'s time to</string>
+    <string name="songname_default_string">pick your first song!</string>
+    <string name="timestamp_track_start">0:00</string>
+    <string name="timestamp_track_end">0:00</string>
 </resources>
