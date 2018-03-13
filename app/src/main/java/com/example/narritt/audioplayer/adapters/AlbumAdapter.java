@@ -1,8 +1,11 @@
 package com.example.narritt.audioplayer.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +25,14 @@ import java.util.ArrayList;
  */
 
 public class AlbumAdapter extends BaseAdapter {
+    private static final String TAG = "MyAudioPlayer";
 
+    private Context context;
     private ArrayList<Album> albums;
     private LayoutInflater albumInf;
 
     public AlbumAdapter(Context c, ArrayList<Album> theAlbums){
+        context = c;
         albums = theAlbums;
         albumInf = LayoutInflater.from(c);
     }
@@ -50,8 +56,6 @@ public class AlbumAdapter extends BaseAdapter {
         return 0;
     }
 
-    //ПРОБЛЕМА С ОБЛОЖКОЙ - В КЛАССЕ ХРАНИТСЯ В ImageView, НАДО КАК-ТО ЗАБРАТЬ  Drawable ИЗ НЕГО
-    // TODO: начал делать с обложкой что-то здесь, разобраться
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
@@ -65,33 +69,63 @@ public class AlbumAdapter extends BaseAdapter {
         //get title and artist strings
         albumTitleView.setText(currAlbum.getTitle());
         albumArtistView.setText(currAlbum.getArtist());
-        //cover.setImageResource(currAlbum.getCover().getDrawable() );
 
-
-        //cover.setImageResource(R.drawable.note);
+        //get cover
         loadAlbumCover(currAlbum, cover);
 
         //set position as tag
         albumLay.setTag(position);
         return albumLay;
     }
+
     public void loadAlbumCover(Album album, ImageView cover){
-        File dir = new File(album.getPath());
+
         boolean coverFound = false;
-        for (File file : dir.listFiles()) {
-            String fileName = file.getName().toLowerCase();
-            /* Полная инфа в аналогичном методе playerActivity */
-            if (fileName.contains("cover.jpg")){
-                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                cover.setImageBitmap(myBitmap);
+        String coverArtPath = getCoverArtPath(album.getID());
+
+        if( coverArtPath != null) {
+            Log.i(TAG, "loadAlbumCover: coverArtPath is " + coverArtPath + "; album is " + album.getTitle() );
+            File imgFile = new File(coverArtPath);
+            Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            if(bmp != null) {
+                cover.setImageBitmap(bmp);
                 coverFound = true;
-                break;
+            }
+        } else Log.i(TAG, "AlbumAdapter: getCoverArtPath returns null");
+
+        if(!coverFound) {
+            File dir = new File(album.getPath());
+            for (File file : dir.listFiles()) {
+                String fileName = file.getName().toLowerCase();
+            /* Полная инфа в аналогичном методе playerActivity */
+                if (fileName.contains("cover.jpg") || fileName.contains("front.jpg")) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    cover.setImageBitmap(myBitmap);
+                    coverFound = true;
+                    break;
+                }
             }
         }
+
         if(!coverFound){
-            //cover.setImageResource(R.drawable.note);
             cover.setImageResource(R.drawable.octave_wb);
         }
+    }
+
+    private String getCoverArtPath(long albumId) {
+        Cursor albumCursor = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumId)},
+                null );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
+        }
+        albumCursor.close();
+        return result;
     }
 
 }

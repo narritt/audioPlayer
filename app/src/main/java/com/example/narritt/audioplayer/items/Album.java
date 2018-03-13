@@ -33,6 +33,7 @@ public class Album {
         //cover.setImageResource(R.drawable.note);
     }
     public Album(Song song){
+        id = song.getAlbumId();
         title = song.getAlbum();
         artist = song.getArtist();
         path = song.getFolderPathString();

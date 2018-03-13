@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -163,8 +164,9 @@ public class SongListActivity extends Activity {
                     (MediaStore.Audio.Media.TRACK);
             int pathColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DATA);
-            /*int albumIdColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM_ID);*/
+            int albumIdColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM_ID);
+            Log.i(TAG, "getSongList: albumIdColumn is " + albumIdColumn);
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
@@ -172,33 +174,17 @@ public class SongListActivity extends Activity {
                 String thisAlbum = musicCursor.getString(albumColumn);
                 int thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
                 String thisPath = musicCursor.getString(pathColumn);
-                //long albumId = musicCursor.getLong(albumIdColumn);
+                long albumId = musicCursor.getLong(albumIdColumn);
                 //String coverPath = getCoverArtPath(albumId);
-                //Log.i(TAG, "Cover path is " + coverPath);
+                //Log.i(TAG, "getSongList: Cover path is " + coverPath + "; album id is = " + albumId);
 
                 //defense from whatsapp audiorecords and google talk notifications and ringtones
                 if((!thisPath.contains("WhatsApp Audio")) && !thisPath.contains("com.google.android.talk"))
-                    songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition, thisPath));
+                    songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition, thisPath, albumId));
             }
             while (musicCursor.moveToNext());
         }
     }
-
-    /*private String getCoverArtPath(long albumId) {
-        Cursor albumCursor = getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
-                MediaStore.Audio.Albums._ID + " = ?",
-                new String[]{Long.toString(albumId)},
-                null );
-        boolean queryResult = albumCursor.moveToFirst();
-        String result = null;
-        if (queryResult) {
-            result = albumCursor.getString(0);
-        }
-        albumCursor.close();
-        return result;
-    }*/
 
     public void getArtistList() {
         for (Song song:songList) {

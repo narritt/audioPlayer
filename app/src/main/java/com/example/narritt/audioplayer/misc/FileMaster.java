@@ -73,8 +73,6 @@ public class FileMaster {
             }
         } catch (FileNotFoundException e) {
             Log.e(TAG, "CURRENT SONG FILE NOT FOUND WHILE READING: " + e.getMessage());
-        } catch (NullPointerException e){
-            Log.e(TAG, "Can't read current playlist - its null : " + e.toString());
         } catch (Exception e) {
             Log.e(TAG, "Freaking exception while reading current playlist : " + e.toString());
         }

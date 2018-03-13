@@ -16,14 +16,16 @@ public class Song {
     private String artist;
     private int position;
     private String path;
+    private long albumId;
 
-    public Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath) {
+    public Song(long songID, String songTitle, String songAlbum, String songArtist, int songPosition, String songPath, long songAlbumId) {
         id = songID;
         title = songTitle;
         album = songAlbum;
         artist = songArtist;
         position = songPosition;
         path = songPath;
+        albumId = songAlbumId;
     }
     public Song(String data){
         Song tmpSong = this.toSong(data);
@@ -36,20 +38,21 @@ public class Song {
     }
 
     public long getID(){return id;}
-    public String getTitle(){return title;}
-    public String getAlbum() {return album;}
-    public String getArtist(){return artist;}
-    public int getPosition() {return position;}
-    public Uri getPath()  {return Uri.parse("file://" + path);}
-    public Uri getFolderPath(){
+    public String   getTitle(){return title;}
+    public String   getAlbum() {return album;}
+    public String   getArtist(){return artist;}
+    public int      getPosition() {return position;}
+    public Uri      getPath()  {return Uri.parse("file://" + path);}
+    public Uri      getFolderPath(){
         Log.i(TAG, "getFolderPath: Song path is " + path);
         String folderPath = path.substring(0, path.lastIndexOf("/"));
         Log.i(TAG, "getFolderPath: Folder path is " + folderPath);
         return Uri.parse("file://" + folderPath);
     }
-    public String getFolderPathString(){
+    public String   getFolderPathString(){
         return path.substring(0, path.lastIndexOf("/"));
     }
+    public long     getAlbumId(){return this.albumId;}
 
     public String toString(){
         return ("ID:" + this.id +
@@ -57,9 +60,10 @@ public class Song {
                 ";ALBUM:" + this.album +
                 ";ARTIST:" + this.artist +
                 ";POSITION:" + this.position +
-                ";PATH:" + this.path);
+                ";PATH:" + this.path +
+                ";ALBUMID:" + this.albumId);
     }
-    protected Song toSong(String str){
+    public Song toSong(String str){
         String params[] = str.split(";");
         Song song = new Song(
                 Long.parseLong(params[0].substring(3)), //ID
@@ -67,7 +71,8 @@ public class Song {
                 params[2].substring(6),     //ALBUM
                 params[3].substring(7),     //ARTIST
                 Integer.parseInt(params[4].substring(9)),    //POSITION
-                params[5].substring(5)      //PATH
+                params[5].substring(5),      //PATH
+                Long.parseLong(params[6].substring(8))  //ALBUMID
         );
         return song;
     }
@@ -84,6 +89,7 @@ public class Song {
         if (title != null ? !title.equals(song.title) : song.title != null) return false;
         if (album != null ? !album.equals(song.album) : song.album != null) return false;
         if (artist != null ? !artist.equals(song.artist) : song.artist != null) return false;
+        if (albumId != song.albumId) return false;
         return path.equals(song.path);
     }
 
@@ -95,6 +101,7 @@ public class Song {
         result = 31 * result + (artist != null ? artist.hashCode() : 0);
         result = 31 * result + position;
         result = 31 * result + path.hashCode();
+        result = 31 * result + (int)albumId;
         return result;
     }
 }

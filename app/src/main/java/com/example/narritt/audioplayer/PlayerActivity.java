@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -200,6 +203,7 @@ public class PlayerActivity extends Activity {
 
         artistName.setText(song.getArtist());
         albumName.setText(song.getAlbum());
+        //artistName.setText(song.getArtist() + " — " + song.getAlbum());
         songName.setText(song.getTitle());
 
         startTime = mediaPlayer.getCurrentPosition();
@@ -239,22 +243,47 @@ public class PlayerActivity extends Activity {
          * с этим надо разобраться.
          * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
          */
-        String folderPath = song.getFolderPathString();
-        Log.i(TAG, "Loading cover, folder path is " + folderPath);
-        File dir = new File(folderPath);
         boolean coverFound = false;
-        for (File file : dir.listFiles()) {
-            String fileName = file.getName().toLowerCase();
-            if (fileName.contains("cover.jpg")){
+        String coverArtPath = getCoverArtPath(song.getAlbumId());
+
+        if( coverArtPath != null) {
+            File imgFile = new File(coverArtPath);
+            Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            imgAlbum.setImageBitmap(bmp);
+            coverFound = true;
+        }
+
+        if(!coverFound) {
+            File dir = new File(song.getFolderPathString());
+            for (File file : dir.listFiles()) {
+                String fileName = file.getName().toLowerCase();
+                if (fileName.contains("cover.jpg") || fileName.contains("front.jpg")) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                 imgAlbum.setImageBitmap(myBitmap);
-                coverFound = true;
-                break;
+                    coverFound = true;
+                    break;
+                }
             }
         }
+
         if(!coverFound){
-            imgAlbum.setImageResource(R.drawable.octave_max);
+            imgAlbum.setImageResource(R.drawable.octave_wb);
         }
+    }
+    private String getCoverArtPath(long albumId) {
+        Cursor albumCursor = getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumId)},
+                null );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
+        }
+        albumCursor.close();
+        return result;
     }
     private void UpdateSongTimeManualy(){
         startTime = mediaPlayer.getCurrentPosition();
