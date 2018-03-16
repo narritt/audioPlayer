@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -15,9 +16,11 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -241,6 +244,7 @@ public class PlayerActivity extends Activity {
          * с этим надо разобраться.
          * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
          */
+        //float height = imgAlbum.getHeight();
         boolean coverFound = false;
         String coverArtPath = getCoverArtPath(song.getAlbumId());
 
@@ -269,6 +273,15 @@ public class PlayerActivity extends Activity {
         if(!coverFound){
             imgAlbum.setImageResource(R.drawable.octave_wb);
         }
+
+        //DIMENSIONS OF IMGALBUM
+        Display display = getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        display.getSize(point);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgAlbum.getLayoutParams();
+        params.width = point.x;
+        params.height = point.x;
+        imgAlbum.setLayoutParams(params);
     }
     private String getCoverArtPath(long albumId) {
         Cursor albumCursor = getContentResolver().query(

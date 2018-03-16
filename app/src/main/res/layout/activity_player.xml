@@ -45,10 +45,9 @@
         android:layout_below="@+id/strSongName"
         android:layout_marginLeft="@dimen/albumcover_margin_horizontal"
         android:layout_marginRight="@dimen/albumcover_margin_horizontal"
-        android:adjustViewBounds="true"
-        android:minHeight="@dimen/albumcover_min_height"
-        android:src="@drawable/octave_max" />
-
+        android:scaleType="fitCenter"
+        android:src="@drawable/octave_max"
+        android:background="@color/white"/>
     <SeekBar
         android:id="@+id/progressControl"
         android:layout_width="match_parent"

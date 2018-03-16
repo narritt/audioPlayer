@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="namestrings_margin_vertical">12dp</dimen>
-    <dimen name="albumcover_min_height">370dp</dimen>
+    <dimen name="albumcover_min_height">36dp</dimen>
     <dimen name="albumcover_margin_horizontal">0dp</dimen>
     <dimen name="progresscontrol_margin_horizontal">-16dp</dimen>
     <dimen name="progresscontrol_margin_top">-10dp</dimen>
