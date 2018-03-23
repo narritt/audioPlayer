@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:gravity="top"
     tools:context="com.example.narritt.audioplayer.PlaylistsActivity">
 
     <LinearLayout
@@ -47,6 +48,6 @@
             android:layout_weight="1"
             android:background="@drawable/btn_none_borders"
             android:onClick="btnAddPlaylistClick"
-            android:text="@string/addPlaylist" />
+            android:text="@string/createPlaylist" />
     </LinearLayout>
 </RelativeLayout>
