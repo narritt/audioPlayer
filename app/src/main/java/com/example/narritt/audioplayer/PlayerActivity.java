@@ -394,9 +394,8 @@ public class PlayerActivity extends Activity {
         startActivity(intent);
     }
     public void btnToPlaylists(View view){
-        /*Intent intent = new Intent(PlayerActivity.this, SongListActivity.class);
-        startActivity(intent);*/
-        Toast.makeText(this, "There will be playlist activity someday", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(PlayerActivity.this, PlaylistsActivity.class);
+        startActivity(intent);
     }
 
     /*
