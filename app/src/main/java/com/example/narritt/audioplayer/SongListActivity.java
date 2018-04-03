@@ -23,17 +23,16 @@ import com.example.narritt.audioplayer.adapters.SongAdapter;
 import com.example.narritt.audioplayer.items.Album;
 import com.example.narritt.audioplayer.items.Artist;
 import com.example.narritt.audioplayer.items.Song;
+import com.example.narritt.audioplayer.misc.SongListMaster;
 
 public class SongListActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
 
     enum ListViewStage{ ARTISTS, ALBUMS, SONGS, ALL_SONGS}
 
-    private ArrayList<Artist> artistList;
-    private ArrayList<Album> albumList;
-    private ArrayList<Song> thisAlbumSongsList;
-    private ArrayList<Song> songList;
     private ListView songView;
+
+    private SongListMaster slm;
 
     private static ListViewStage currStage = ListViewStage.ARTISTS;
     private static Artist pickedArtist = null;
@@ -48,23 +47,23 @@ public class SongListActivity extends Activity {
                         currStage = ListViewStage.ALL_SONGS;
                     else {
                         currStage = ListViewStage.ALBUMS;
-                        pickedArtist = artistList.get(position);
+                        pickedArtist = slm.getArtistList().get(position);
                     }
                     changeStage();
                     break;
                 case ALBUMS:
                     currStage = ListViewStage.SONGS;
-                    pickedAlbum = albumList.get(position);
+                    pickedAlbum = slm.getAlbumList().get(position);
                     changeStage();
                     break;
                 case SONGS:
                     PlayerActivity plAct = PlayerActivity.getInstance();
-                    plAct.play(thisAlbumSongsList, position);
+                    plAct.play(slm.getThisAlbumSongsList(), position);
                     finish();
                     break;
                 case ALL_SONGS:
                     plAct = PlayerActivity.getInstance();
-                    plAct.play(songList, position);
+                    plAct.play(slm.getSongList(), position);
                     finish();
                     break;
             }
@@ -79,12 +78,8 @@ public class SongListActivity extends Activity {
         songView = (ListView)findViewById(R.id.song_list);
         songView.setOnItemClickListener(listener);
 
-        artistList = new ArrayList<Artist>();
-        albumList = new ArrayList<Album>();
-        songList = new ArrayList<Song>();
-        thisAlbumSongsList = new ArrayList<Song>();
+        slm = new SongListMaster(this);
 
-        getSongList();
         changeStage();
     }
 
@@ -92,144 +87,40 @@ public class SongListActivity extends Activity {
         String allSongsPointString = this.getString(R.string.allSongsFromArtistList);
         switch (currStage){
             case ARTISTS:
-                artistList.clear();
-                getArtistList();
-                Collections.sort(artistList, new Comparator<Artist>(){
-                    public int compare(Artist a, Artist b){
-                        return a.getName().compareTo(b.getName());
-                    }
-                });
-                artistList.add(0, new Artist(allSongsPointString));
-                ArtistAdapter artAdt = new ArtistAdapter(this, artistList);
+                slm.createArtistList();
+                ArtistAdapter artAdt = new ArtistAdapter(this, slm.getArtistList());
                 songView.setAdapter(artAdt);
                 break;
             case ALBUMS:
-                albumList.clear();
+                slm.clearAlbumList();
                 if (pickedArtist.getName().equals(allSongsPointString)){
-                    SongAdapter allSongsAdt = new SongAdapter(this, songList);
+                    SongAdapter allSongsAdt = new SongAdapter(this, slm.getSongList());
                     songView.setAdapter(allSongsAdt);
                 } else {
-                    getAlbumList(pickedArtist);
-                    Collections.sort(albumList, new Comparator<Album>() {
-                        public int compare(Album a, Album b) {
-                            return a.getTitle().compareTo(b.getTitle());
-                        }
-                    });
-                    AlbumAdapter albAdt = new AlbumAdapter(this, albumList);
+                    slm.createAlbumList(pickedArtist);
+                    AlbumAdapter albAdt = new AlbumAdapter(this, slm.getAlbumList());
                     songView.setAdapter(albAdt);
                 }
                 break;
             case SONGS:
-                thisAlbumSongsList.clear();
-                getSongsFromAlbum(pickedAlbum);
-                Collections.sort(thisAlbumSongsList, new Comparator<Song>(){
-                    public int compare(Song a, Song b){
-                        int cmp;
-                        if      (a.getPosition() > b.getPosition()) cmp = +1;
-                        else if (a.getPosition() < b.getPosition()) cmp = -1;
-                        else    cmp = 0;
-                        return cmp;
-                    }
-                });
-                SongAdapter songAdt = new SongAdapter(this, thisAlbumSongsList);
+                slm.createSongsFromAlbum(pickedAlbum);
+                SongAdapter songAdt = new SongAdapter(this, slm.getThisAlbumSongsList());
                 songView.setAdapter(songAdt);
                 break;
             case ALL_SONGS:
-                Collections.sort(songList, new Comparator<Song>() {
-                    public int compare(Song a, Song b) {
-                        return a.getTitle().compareTo(b.getTitle());
-                    }
-                });
-                SongAdapter allSongsAdt = new SongAdapter(this, songList);
+                slm.sortSongList();
+                SongAdapter allSongsAdt = new SongAdapter(this, slm.getSongList());
                 songView.setAdapter(allSongsAdt);
                 break;
         }
     }
 
-    public void getSongList() {
-        ContentResolver musicResolver = getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-
-        if(musicCursor!=null && musicCursor.moveToFirst()){
-            int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
-            int albumColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM);
-            int posColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.TRACK);
-            int pathColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.DATA);
-            int albumIdColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM_ID);
-            do {
-                long thisId = musicCursor.getLong(idColumn);
-                String thisTitle = musicCursor.getString(titleColumn);
-                String thisArtist = musicCursor.getString(artistColumn);
-                String thisAlbum = musicCursor.getString(albumColumn);
-                int thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
-                String thisPath = musicCursor.getString(pathColumn);
-                long albumId = musicCursor.getLong(albumIdColumn);
-                //String coverPath = getCoverArtPath(albumId);
-                //Log.i(TAG, "getSongList: Cover path is " + coverPath + "; album id is = " + albumId);
-
-                //defense from whatsapp audiorecords and google talk notifications and ringtones
-                if((!thisPath.contains("WhatsApp Audio")) && !thisPath.contains("com.google.android.talk"))
-                    songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition, thisPath, albumId));
-            }
-            while (musicCursor.moveToNext());
-        }
-    }
-
-    public void getArtistList() {
-        for (Song song:songList) {
-            Artist songArtist = new Artist(song.getArtist());
-            if (!artistList.contains(songArtist)){
-                artistList.add(songArtist);
-            }
-        }
-    }
-
-    public void getAlbumList(Artist pickedArtist) {
-        //defense
-        if (pickedArtist == null) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Выбранный артист - Null", Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            for (Song song : songList) {
-                //Album songAlbum = new Album(song.getAlbum(), song.getArtist());
-                Album songAlbum = new Album(song);
-                if ((!albumList.contains(songAlbum)) && (songAlbum.getArtist().equals(pickedArtist.getName()))) {
-                    albumList.add(songAlbum);
-                }
-            }
-        }
-    }
-
-    public void getSongsFromAlbum(Album pickedAlbum) {
-        //defense
-        if (pickedArtist == null) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Выбранный альбом - Null", Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            thisAlbumSongsList.clear();
-            for (Song song : songList) {
-                if (song.getAlbum().equals(pickedAlbum.getTitle())) {
-                    thisAlbumSongsList.add(song);
-                }
-            }
-
-        }
-    }
-
+    /*
+     * Interface logic
+     */
     public void btnBackToPlayerClick(View view){
         finish();
     }
-
     @Override
     public void onBackPressed() {
         switch (currStage){
@@ -256,7 +147,6 @@ public class SongListActivity extends Activity {
                 break;
         }
     }
-
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
