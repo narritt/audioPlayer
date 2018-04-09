@@ -46,8 +46,8 @@ public class AddSongAdapter extends BaseAdapter {
         //map to song layout
         LinearLayout songLay = (LinearLayout)songInf.inflate(R.layout.add_song, parent, false);
         //get title and artist views
-        TextView songView   = (TextView)songLay.findViewById(R.id.song_title);
-        TextView artistView = (TextView)songLay.findViewById(R.id.song_artist);
+        TextView songView   = songLay.findViewById(R.id.song_title);
+        TextView artistView = songLay.findViewById(R.id.song_artist);
         //get song using position
         Song currSong = songs.get(position);
         //get title and artist strings

@@ -1,11 +1,5 @@
 package com.example.narritt.audioplayer.items;
 
-
-
-/**
- * Created by Narritt on 13.01.2018.
- */
-
 public class Artist {
     private long id;
     private String name;

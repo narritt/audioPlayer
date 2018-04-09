@@ -2,14 +2,6 @@ package com.example.narritt.audioplayer;
 
 import android.app.Activity;
 import android.os.Bundle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import android.net.Uri;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,11 +14,10 @@ import com.example.narritt.audioplayer.adapters.ArtistAdapter;
 import com.example.narritt.audioplayer.adapters.SongAdapter;
 import com.example.narritt.audioplayer.items.Album;
 import com.example.narritt.audioplayer.items.Artist;
-import com.example.narritt.audioplayer.items.Song;
 import com.example.narritt.audioplayer.misc.SongListMaster;
 
 public class SongListActivity extends Activity {
-    private static final String TAG = "MyAudioPlayer";
+    //private static final String TAG = "MyAudioPlayer";
 
     enum ListViewStage{ ARTISTS, ALBUMS, SONGS, ALL_SONGS}
 
@@ -75,7 +66,7 @@ public class SongListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
 
-        songView = (ListView)findViewById(R.id.song_list);
+        songView = findViewById(R.id.song_list);
         songView.setOnItemClickListener(listener);
 
         slm = new SongListMaster(this);

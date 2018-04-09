@@ -2,10 +2,6 @@ package com.example.narritt.audioplayer.items;
 
 import android.widget.ImageView;
 
-/**
- * Created by Narritt on 13.01.2018.
- */
-
 public class Album {
 
     private long id;
@@ -22,7 +18,6 @@ public class Album {
         artist = albumArtist;
 
         year = 1970;
-        //cover.setImageResource(R.drawable.note);
     }
     public Album (long albumId, String albumTitle, String albumArtist){
         id = albumId;
@@ -30,7 +25,6 @@ public class Album {
         artist = albumArtist;
 
         year = 1970;
-        //cover.setImageResource(R.drawable.note);
     }
     public Album(Song song){
         id = song.getAlbumId();

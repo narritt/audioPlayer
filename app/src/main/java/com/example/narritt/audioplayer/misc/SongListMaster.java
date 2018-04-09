@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.example.narritt.audioplayer.R;
 import com.example.narritt.audioplayer.items.Album;
@@ -19,7 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class SongListMaster {
-    private static final String TAG = "MyAudioPlayer";
+    //private static final String TAG = "MyAudioPlayer";
     private Context ctx;
 
     private ArrayList<Artist> artistList;
@@ -30,11 +28,11 @@ public class SongListMaster {
 
     public SongListMaster(Context context){
         ctx = context;
-        artistList = new ArrayList<Artist>();
-        albumList = new ArrayList<Album>();
-        songList = new ArrayList<Song>();
-        thisAlbumSongsList = new ArrayList<Song>();
-        playlistList = new ArrayList<Playlist>();
+        artistList =            new ArrayList<>();
+        albumList =             new ArrayList<>();
+        songList =              new ArrayList<>();
+        thisAlbumSongsList =    new ArrayList<>();
+        playlistList =          new ArrayList<>();
         createSongList();
     }
 
@@ -54,7 +52,7 @@ public class SongListMaster {
         return playlistList;
     }
 
-    public void createSongList() {
+    private void createSongList() {
         ContentResolver musicResolver = ctx.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -90,8 +88,11 @@ public class SongListMaster {
                     songList.add(new Song(thisId, thisTitle, thisAlbum, thisArtist, thisPosition, thisPath, albumId));
             }
             while (musicCursor.moveToNext());
+
+            musicCursor.close();
         }
     }
+
     public void createArtistList() {
         artistList.clear();
         for (Song song:songList) {
@@ -141,13 +142,12 @@ public class SongListMaster {
     }
     public boolean createPlaylistsList(){
         //playlistList.clear();
-        if(playlistList.isEmpty())
-            return false;
-        return true;
+        //TODO
+        return playlistList.isEmpty();
     }
 
     public void clearAlbumList(){
-        albumList.clear();;
+        albumList.clear();
     }
     public void sortSongList(){
         Collections.sort(songList, new Comparator<Song>() {

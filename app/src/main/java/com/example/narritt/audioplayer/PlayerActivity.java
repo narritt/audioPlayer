@@ -64,18 +64,18 @@ public class PlayerActivity extends Activity {
         checkPermission();
 
         //Finding elements in R
-        btnPlay = (ImageButton) findViewById(R.id.btnPlay);
-        btnLoop = (ImageButton) findViewById(R.id.btnLoop);
-        btnRand = (ImageButton) findViewById(R.id.btnRand);
-        btnNext = (ImageButton) findViewById(R.id.btnNext);
-        btnPrev = (ImageButton) findViewById(R.id.btnPrev);
-        artistName = (TextView) findViewById(R.id.strArtistName);
-        albumName = (TextView) findViewById(R.id.strAlbumName);
-        songName = (TextView) findViewById(R.id.strSongName);
-        songDuration = (TextView) findViewById(R.id.strSongDuration);
-        currentSongPosition = (TextView) findViewById(R.id.strCurrentSongPosition);
-        progressControl = (SeekBar) findViewById(R.id.progressControl);
-        imgAlbum = (ImageView) findViewById(R.id.imgAlbum);
+        btnPlay =               findViewById(R.id.btnPlay);
+        btnLoop =               findViewById(R.id.btnLoop);
+        btnRand =               findViewById(R.id.btnRand);
+        btnNext =               findViewById(R.id.btnNext);
+        btnPrev =               findViewById(R.id.btnPrev);
+        artistName =            findViewById(R.id.strArtistName);
+        albumName =             findViewById(R.id.strAlbumName);
+        songName =              findViewById(R.id.strSongName);
+        songDuration =          findViewById(R.id.strSongDuration);
+        currentSongPosition =   findViewById(R.id.strCurrentSongPosition);
+        progressControl =       findViewById(R.id.progressControl);
+        imgAlbum =              findViewById(R.id.imgAlbum);
 
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());

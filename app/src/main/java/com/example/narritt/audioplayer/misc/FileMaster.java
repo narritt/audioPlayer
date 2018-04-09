@@ -25,7 +25,6 @@ public class FileMaster {
     public FileMaster(Context ctx){
         context = ctx;
         currentPlaylistFile = new File(context.getFilesDir() + currentPlaylistFileName);
-        //Log.i(TAG, "Create a FileMaster, context:  " + ctx.toString() + "; FilesDir path: "  + ctx.getFilesDir());
     }
 
     public void writeCurrentPlaylist(PlayerCurrentState plState){

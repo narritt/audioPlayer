@@ -3,10 +3,6 @@ package com.example.narritt.audioplayer.items;
 import android.net.Uri;
 import android.util.Log;
 
-/**
- * Created by Narritt on 28.11.2017.
- */
-
 public class Song {
     private static final String TAG = "MyAudioPlayer";
 
@@ -47,10 +43,7 @@ public class Song {
         return Uri.parse("file://" + path);
     }
     public Uri      getFolderPath(){
-        Log.i(TAG, "getFolderPath: Song path is " + path);
-        String folderPath = path.substring(0, path.lastIndexOf("/"));
-        Log.i(TAG, "getFolderPath: Folder path is " + folderPath);
-        return Uri.parse("file://" + folderPath);
+        return Uri.parse("file://" + path.substring(0, path.lastIndexOf("/")));
     }
     public String   getFolderPathString(){
         return path.substring(0, path.lastIndexOf("/"));
@@ -69,13 +62,13 @@ public class Song {
     public Song toSong(String str){
         String params[] = str.split(";");
         Song song = new Song(
-                Long.parseLong(params[0].substring(3)), //ID
-                params[1].substring(6),     //TITLE
-                params[2].substring(6),     //ALBUM
-                params[3].substring(7),     //ARTIST
-                Integer.parseInt(params[4].substring(9)),    //POSITION
-                params[5].substring(5),      //PATH
-                Long.parseLong(params[6].substring(8))  //ALBUMID
+                Long.parseLong(params[0].substring(3)),     //ID
+                params[1].substring(6),                     //TITLE
+                params[2].substring(6),                     //ALBUM
+                params[3].substring(7),                     //ARTIST
+                Integer.parseInt(params[4].substring(9)),   //POSITION
+                params[5].substring(5),                     //PATH
+                Long.parseLong(params[6].substring(8))      //ALBUMID
         );
         return song;
     }

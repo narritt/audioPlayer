@@ -1,9 +1,5 @@
 package com.example.narritt.audioplayer;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -22,12 +18,7 @@ import com.example.narritt.audioplayer.adapters.SongAdapter;
 import com.example.narritt.audioplayer.items.Album;
 import com.example.narritt.audioplayer.items.Artist;
 import com.example.narritt.audioplayer.items.Playlist;
-import com.example.narritt.audioplayer.items.Song;
 import com.example.narritt.audioplayer.misc.SongListMaster;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class PlaylistsActivity extends AppCompatActivity {
 
@@ -87,9 +78,9 @@ public class PlaylistsActivity extends AppCompatActivity {
 
         slm = new SongListMaster(this);
 
-        songView = (ListView)findViewById(R.id.playlist_list);
+        songView = findViewById(R.id.playlist_list);
         songView.setOnItemClickListener(listener);
-        btnCreatePlaylist = (Button) findViewById(R.id.btnAddPlaylist);
+        btnCreatePlaylist = findViewById(R.id.btnAddPlaylist);
 
         changeStage();
     }
