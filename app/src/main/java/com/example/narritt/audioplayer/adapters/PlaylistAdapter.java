@@ -1,9 +1,5 @@
 package com.example.narritt.audioplayer.adapters;
 
-/**
- * Created by Narritt on 23.03.2018.
- */
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,18 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.narritt.audioplayer.R;
-
 import java.util.ArrayList;
-
 import com.example.narritt.audioplayer.items.Playlist;
-
-import java.util.ArrayList;
-
-/**
- * Created by Narritt on 13.01.2018.
- */
 
 public class PlaylistAdapter extends BaseAdapter {
 

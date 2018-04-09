@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * Created by Narritt on 03.04.2018.
- */
-
 public class SongListMaster {
     private static final String TAG = "MyAudioPlayer";
     private Context ctx;
@@ -38,7 +34,7 @@ public class SongListMaster {
         albumList = new ArrayList<Album>();
         songList = new ArrayList<Song>();
         thisAlbumSongsList = new ArrayList<Song>();
-        playlistList = new ArrayList<>();
+        playlistList = new ArrayList<Playlist>();
         createSongList();
     }
 
