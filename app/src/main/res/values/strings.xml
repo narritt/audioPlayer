@@ -16,4 +16,5 @@
     <string name="title_activity_playlists">PlaylistsActivity</string>
     <string name="createPlaylist">Create playlist</string>
     <string name="stopCreatingPlaylist">Stop creating</string>
+    <string name="saveCurrentPlaylist">Save playlist</string>
 </resources>

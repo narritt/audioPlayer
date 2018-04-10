@@ -121,7 +121,8 @@ public class PlayerActivity extends Activity {
      */
     public void play(ArrayList<Song> songs, int position){
         playerState.isMusicPlaying = true;
-        mediaPlayer.stop();
+        if(mediaPlayer!=null)
+            mediaPlayer.stop();
         playerState.setCurrentPlaylistAndSong(songs, position);
         mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
         mediaPlayer.start();

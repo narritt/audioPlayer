@@ -2,15 +2,13 @@ package com.example.narritt.audioplayer.items;
 
 import java.util.ArrayList;
 
-/**
- * Created by Narritt on 23.03.2018.
- */
-
 public class Playlist {
     private String name;
     private ArrayList<Song> playlist;
 
     public Playlist() {
+        name = new String();
+        playlist = new ArrayList<>();
     }
     public Playlist(String name) {
         this.name = name;
@@ -31,5 +29,11 @@ public class Playlist {
 
     public void addSong(Song song){
         playlist.add(song);
+    }
+    public void removeSong(int index) {
+        playlist.remove(index);
+    }
+    public void removeSong(Song song) {
+        playlist.remove(song);
     }
 }

@@ -2,6 +2,7 @@ package com.example.narritt.audioplayer;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +23,8 @@ import com.example.narritt.audioplayer.misc.SongListMaster;
 
 public class PlaylistsActivity extends AppCompatActivity {
 
+    private static final String TAG = "MyAudioPlayer";
+
     enum ListViewStage{ ADD_ARTISTS, ADD_ALBUMS, ADD_SONGS, ADD_ALL_SONGS, PLAYLISTS, SONGS}
 
     private SongListMaster slm;
@@ -33,6 +36,7 @@ public class PlaylistsActivity extends AppCompatActivity {
     private static Playlist pickedPlaylist = null;
     private static Artist pickedArtist = null;
     private static Album pickedAlbum = null;
+    private static Playlist creatingPlaylist = new Playlist();
 
     private OnItemClickListener listener = new AdapterView.OnItemClickListener() {
         @Override
@@ -61,10 +65,14 @@ public class PlaylistsActivity extends AppCompatActivity {
                     break;
                 case ADD_SONGS:
                     Toast toast = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист", Toast.LENGTH_SHORT);
+                    creatingPlaylist.addSong(slm.getThisAlbumSongsList().get(position));
+                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
                     toast.show();
                     break;
                 case ADD_ALL_SONGS:
                     Toast toast1 = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист из полного списка треков", Toast.LENGTH_SHORT);
+                    creatingPlaylist.addSong(slm.getSongList().get(position));
+                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
                     toast1.show();
                     break;
             }
