@@ -22,7 +22,6 @@ public class Playlist {
     public String getName() {
         return name;
     }
-
     public ArrayList<Song> getPlaylist() {
         return playlist;
     }
@@ -35,5 +34,8 @@ public class Playlist {
     }
     public void removeSong(Song song) {
         playlist.remove(song);
+    }
+    public void clear() {
+        playlist.clear();
     }
 }

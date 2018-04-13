@@ -33,7 +33,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnToArtists"
+            android:id="@+id/btnBackToPlayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

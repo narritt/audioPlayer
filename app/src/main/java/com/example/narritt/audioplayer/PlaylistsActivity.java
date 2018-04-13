@@ -30,7 +30,7 @@ public class PlaylistsActivity extends AppCompatActivity {
     private SongListMaster slm;
 
     private ListView songView;
-    private Button btnCreatePlaylist;
+    private Button btnCreatePlaylist, btnBackToPlayer;
 
     private static ListViewStage currStage = ListViewStage.PLAYLISTS;
     private static Playlist pickedPlaylist = null;
@@ -89,6 +89,7 @@ public class PlaylistsActivity extends AppCompatActivity {
         songView = findViewById(R.id.playlist_list);
         songView.setOnItemClickListener(listener);
         btnCreatePlaylist = findViewById(R.id.btnAddPlaylist);
+        btnBackToPlayer = findViewById(R.id.btnBackToPlayer);
 
         changeStage();
     }
@@ -103,6 +104,9 @@ public class PlaylistsActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), "Нет существующих плейлистов", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+                creatingPlaylist.clear();
+                btnCreatePlaylist.setText(R.string.createPlaylist);
+                btnBackToPlayer.setText(R.string.backToPlayer);
                 PlaylistAdapter pllAdt = new PlaylistAdapter(this, slm.getPlaylistList());
                 songView.setAdapter(pllAdt);
                 break;
@@ -113,6 +117,8 @@ public class PlaylistsActivity extends AppCompatActivity {
                 slm.createArtistList();
                 ArtistAdapter artAdt = new ArtistAdapter(this, slm.getArtistList());
                 songView.setAdapter(artAdt);
+                btnCreatePlaylist.setText(R.string.saveCurrentPlaylist);
+                btnBackToPlayer.setText(R.string.saveCurrentPlaylist);
                 break;
             case ADD_ALBUMS:
                 if (pickedArtist.getName().equals(allSongsPointString)){
@@ -144,15 +150,13 @@ public class PlaylistsActivity extends AppCompatActivity {
         finish();
     }
     public void btnAddPlaylistClick(View view){
-        /*if(currStage == ListViewStage.PLAYLISTS || currStage == ListViewStage.SONGS) {
+        if(currStage == ListViewStage.PLAYLISTS || currStage == ListViewStage.SONGS) {
             currStage = ListViewStage.ADD_ARTISTS;
-            btnCreatePlaylist.setText(R.string.createPlaylist);
-        }
+        } else
         if(currStage == ListViewStage.ADD_ARTISTS || currStage == ListViewStage.ADD_ALBUMS || currStage == ListViewStage.ADD_SONGS || currStage == ListViewStage.ADD_ALL_SONGS) {
             currStage = ListViewStage.PLAYLISTS;
-            btnCreatePlaylist.setText(R.string.stopCreatingPlaylist);
-        }*/
-        currStage = ListViewStage.ADD_ARTISTS;
+        }
+        //currStage = ListViewStage.ADD_ARTISTS;
         changeStage();
     }
     @Override

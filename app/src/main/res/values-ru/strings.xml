@@ -13,6 +13,6 @@
     <string name="albumname_default_string">Настало время выбрать</string>
     <string name="songname_default_string">вашу первую песню!</string>
     <string name="createPlaylist">Создать плейлист</string>
-    <string name="stopCreatingPlaylist">Отмена создания</string>
-    <string name="saveCurrentPlaylist">Save playlist</string>
+    <string name="stopCreatingPlaylist">Отмена</string>
+    <string name="saveCurrentPlaylist">Сохранить плейлист</string>
 </resources>
