@@ -15,4 +15,6 @@
     <string name="createPlaylist">Создать плейлист</string>
     <string name="stopCreatingPlaylist">Отмена</string>
     <string name="saveCurrentPlaylist">Сохранить плейлист</string>
+
+    <string name="pref_equalizer">Эквалайзер</string>
 </resources>

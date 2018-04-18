@@ -121,7 +121,7 @@ public class PlayerActivity extends Activity {
      */
     public void play(ArrayList<Song> songs, int position){
         playerState.isMusicPlaying = true;
-        if(mediaPlayer!=null)
+        if(mediaPlayer != null) //if its a first start of application
             mediaPlayer.stop();
         playerState.setCurrentPlaylistAndSong(songs, position);
         mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
@@ -130,9 +130,9 @@ public class PlayerActivity extends Activity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Log.i(TAG, "Track is completed");
+                //Log.i(TAG, "Track is completed");
                 if(playerState.getCurrentPlaylist() == null) {
-                    Log.i(TAG, "MP.onCompletion : currPlayList is empty.");
+                    Log.e(TAG, "MP.onCompletion : currPlayList is empty, can't play.");
                     stopPlay();
                 } else {
                     int indexCurrSong = playerState.getCurrentSongIndex();
@@ -397,6 +397,14 @@ public class PlayerActivity extends Activity {
     public void btnToPlaylists(View view){
         Intent intent = new Intent(PlayerActivity.this, PlaylistsActivity.class);
         startActivity(intent);
+    }
+    public void btnPrefClick(View view){
+        Intent intent = new Intent(PlayerActivity.this, PrefActivity.class);
+        startActivity(intent);
+    }
+    public void btnCurrPlaylistClick(View view){
+        Toast toast = Toast.makeText(getApplicationContext(), "Текущий плейлист", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /*

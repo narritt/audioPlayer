@@ -17,4 +17,6 @@
     <string name="createPlaylist">Create playlist</string>
     <string name="stopCreatingPlaylist">Stop creating</string>
     <string name="saveCurrentPlaylist">Save playlist</string>
+
+    <string name="pref_equalizer">Equalizer</string>
 </resources>

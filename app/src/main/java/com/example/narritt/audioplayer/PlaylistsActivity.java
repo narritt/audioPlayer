@@ -65,9 +65,15 @@ public class PlaylistsActivity extends AppCompatActivity {
                     break;
                 case ADD_SONGS:
                     Toast toast = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист", Toast.LENGTH_SHORT);
+                    toast.show();
+
                     creatingPlaylist.addSong(slm.getThisAlbumSongsList().get(position));
                     Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
-                    toast.show();
+
+                    //AddSongAdapter songAdt = songView.getAdapter().getItem(position); //new AddSongAdapter(getApplicationContext(), slm.getThisAlbumSongsList());
+                    //View songpoing = songAdt.getView(position, null, null);
+
+                    //String item = (String) view.getListAdapter().getItem(position);
                     break;
                 case ADD_ALL_SONGS:
                     Toast toast1 = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист из полного списка треков", Toast.LENGTH_SHORT);
@@ -94,8 +100,6 @@ public class PlaylistsActivity extends AppCompatActivity {
         changeStage();
     }
 
-
-
     protected void changeStage(){
         String allSongsPointString = this.getString(R.string.allSongsFromArtistList);
         switch (currStage){
@@ -118,7 +122,7 @@ public class PlaylistsActivity extends AppCompatActivity {
                 ArtistAdapter artAdt = new ArtistAdapter(this, slm.getArtistList());
                 songView.setAdapter(artAdt);
                 btnCreatePlaylist.setText(R.string.saveCurrentPlaylist);
-                btnBackToPlayer.setText(R.string.saveCurrentPlaylist);
+                btnBackToPlayer.setText(R.string.stopCreatingPlaylist);
                 break;
             case ADD_ALBUMS:
                 if (pickedArtist.getName().equals(allSongsPointString)){

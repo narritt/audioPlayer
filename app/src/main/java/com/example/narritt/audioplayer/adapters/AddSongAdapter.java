@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,8 +32,7 @@ public class AddSongAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int arg0) {
-        // TODO Auto-generated method stub
-        return null;
+        return songs.get(arg0);
     }
 
     @Override
@@ -43,11 +43,18 @@ public class AddSongAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //мы пробуем использовать convertView, который идет на вход метода.
+        //Это уже созданное ранее View, но неиспользуемое в данный момент.
+        //Например, при прокрутке списка, часть пунктов уходит за экран и их уже не надо прорисовывать
+        LinearLayout songLay = (LinearLayout) convertView;
+        if (songLay == null) {
+            songLay = (LinearLayout)songInf.inflate(R.layout.add_song, parent, false);
+        }
         //map to song layout
-        LinearLayout songLay = (LinearLayout)songInf.inflate(R.layout.add_song, parent, false);
         //get title and artist views
         TextView songView   = songLay.findViewById(R.id.song_title);
         TextView artistView = songLay.findViewById(R.id.song_artist);
+        CheckBox chb        = songLay.findViewById(R.id.chbSelected);
         //get song using position
         Song currSong = songs.get(position);
         //get title and artist strings
@@ -57,5 +64,10 @@ public class AddSongAdapter extends BaseAdapter {
         songLay.setTag(position);
         return songLay;
     }
+
+    /*CheckBox.OnCheckedChangeListener songSelectedCheck = new CheckBox.OnCheckedChangeListener() {
+        public void onCheckedChanged(CheckBox checkBox, boolean isChecked) {
+        }
+    };*/
 
 }
