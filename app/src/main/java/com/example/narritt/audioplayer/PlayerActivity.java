@@ -2,6 +2,8 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -25,6 +27,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.narritt.audioplayer.items.Playlist;
 import com.example.narritt.audioplayer.items.Song;
 import com.example.narritt.audioplayer.misc.FileMaster;
 import com.example.narritt.audioplayer.misc.PlayerCurrentState;
@@ -54,6 +57,9 @@ public class PlayerActivity extends Activity {
 
     //NotificationManager nm;
 
+
+    //TODO notification
+    //todo WTF THIS BUG стартует иузыка при переключении песен на короткое время
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -402,9 +408,8 @@ public class PlayerActivity extends Activity {
         startActivity(intent);
     }
     public void btnCurrPlaylistClick(View view){
-        //TODO add toast with current playlist
-        Toast toast = Toast.makeText(getApplicationContext(), "Текущий плейлист", Toast.LENGTH_SHORT);
-        toast.show();
+        Intent intent = new Intent(PlayerActivity.this, PlaylistDialogActivity.class);
+        startActivity(intent);
     }
 
     /*

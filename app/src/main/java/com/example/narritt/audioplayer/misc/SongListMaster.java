@@ -142,7 +142,8 @@ public class SongListMaster {
     }
     public boolean createPlaylistsList(){
         //playlistList.clear();
-        //TODO method returning playlist[] of created playlists
+        //TODO method returning playlist[] of created playlists;
+        //return FALSE if there is no created playlists
         return playlistList.isEmpty();
     }
 

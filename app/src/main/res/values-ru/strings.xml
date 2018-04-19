@@ -1,10 +1,5 @@
-
 <resources>
     <string name="app_name">audioPlayer</string>
-    <string name="btnPlay">Play</string>
-    <string name="btnPrev">Prev</string>
-    <string name="btnNext">Next</string>
-    <string name="chbLoop">Loop</string>
     <string name="allSongsFromArtistList">Все песни</string>
     <string name="backToPlayer">Назад</string>
     <string name="toArtists">Артисты</string>
@@ -17,4 +12,10 @@
     <string name="saveCurrentPlaylist">Сохранить плейлист</string>
 
     <string name="pref_equalizer">Эквалайзер</string>
+
+    <string name="curr_playlist_title">Текущий плейлист</string>
+    <string name="curr_playlist_message_songname">Название</string>
+    <string name="curr_playlist_neg_button">Закрыть</string>
+
+
 </resources>

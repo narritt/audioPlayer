@@ -9,6 +9,7 @@ import java.util.Collections;
 
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
+    private static PlayerCurrentState _instance;
     private ArrayList<Song>
             currentPlaylist,
             shuffledPlaylist;
@@ -23,9 +24,11 @@ public class PlayerCurrentState {
     public PlayerCurrentState(ArrayList<Song> songs, Song currSong){
         this.currentPlaylist = songs;
         this.currentSong = currSong;
+        this._instance = this;
     }
     public PlayerCurrentState(ArrayList<Song> songs, int pos){
         this.currentPlaylist = songs;
+        this._instance = this;
         if(currentPlaylist!=null)
             this.currentSong = songs.get(pos);
         else
@@ -34,6 +37,7 @@ public class PlayerCurrentState {
     public PlayerCurrentState(){
         this.currentPlaylist = null;
         this.currentSong = null;
+        this._instance = this;
     }
 
     //++++ GETTERS ++++
@@ -62,6 +66,9 @@ public class PlayerCurrentState {
     public long             getCurrentAlbumID() {
         Log.i(TAG, "Current album id is " + currentSong.getAlbumId());
         return currentSong.getAlbumId();
+    }
+    public static PlayerCurrentState get_instance(){
+        return _instance;
     }
 
     //++++ SETTERS ++++

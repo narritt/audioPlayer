@@ -1,9 +1,5 @@
 <resources>
     <string name="app_name">audioPlayer</string>
-    <string name="btnPlay">Play</string>
-    <string name="btnPrev">Prev</string>
-    <string name="btnNext">Next</string>
-    <string name="chbLoop">Loop</string>
     <string name="allSongsFromArtistList">All songs</string>
     <string name="backToPlayer">Back</string>
     <string name="toArtists">To artists</string>
@@ -11,12 +7,20 @@
     <string name="artistname_default_string">Hello!</string>
     <string name="albumname_default_string">It\'s time to</string>
     <string name="songname_default_string">pick your first song!</string>
-    <string name="timestamp_track_start">0:00</string>
-    <string name="timestamp_track_end">0:00</string>
-    <string name="title_activity_playlists">PlaylistsActivity</string>
     <string name="createPlaylist">Create playlist</string>
     <string name="stopCreatingPlaylist">Stop creating</string>
     <string name="saveCurrentPlaylist">Save playlist</string>
 
     <string name="pref_equalizer">Equalizer</string>
+
+    <string name="curr_playlist_title">Current playlist</string>
+    <string name="curr_playlist_message_songname">Title</string>
+    <string name="curr_playlist_neg_button">Close</string>
+
+
+    <string name="title_activity_playlists">PlaylistsActivity</string>
+    <string name="timestamp_track_start">0:00</string>
+    <string name="timestamp_track_end">0:00</string>
+    <string name="tab">\u0009\u0009\u0009</string>
+    <string name="SAMPLE_TEXT">SAMPLE TEXT</string>
 </resources>
