@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    tools:context="com.example.narritt.audioplayer.PlaylistDialogActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/curr_playlist_title"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/namestrings_margin_vertical"
+        android:layout_marginLeft="@dimen/namestrings_margin_vertical"
+        android:textColor="@color/black"
+        android:textSize="20dp"/>
+    <TextView
+        android:id="@+id/numandname"
+        android:text="@string/SAMPLE_TEXT"
+        android:layout_marginTop="@dimen/namestrings_margin_vertical"
+        android:layout_marginLeft="@dimen/namestrings_margin_vertical"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/playlist_song_list"/>
+    </LinearLayout>
+</LinearLayout>
