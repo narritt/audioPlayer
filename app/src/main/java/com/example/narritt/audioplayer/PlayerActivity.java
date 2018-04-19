@@ -148,8 +148,7 @@ public class PlayerActivity extends Activity {
                         else
                             play(playerState.getCurrentPlaylist(), indexCurrSong + 1);
                     } else {
-                        // TODO : 02.03.18 create normal randomizer
-                        play(playerState.getCurrentPlaylist(), new Random().nextInt(playerState.getPlaylistSize()));
+                        play(playerState.getShuffledPlaylist(), new Random().nextInt(playerState.getPlaylistSize()));
                     }
                 }
             }
@@ -403,6 +402,7 @@ public class PlayerActivity extends Activity {
         startActivity(intent);
     }
     public void btnCurrPlaylistClick(View view){
+        //TODO add toast with current playlist
         Toast toast = Toast.makeText(getApplicationContext(), "Текущий плейлист", Toast.LENGTH_SHORT);
         toast.show();
     }

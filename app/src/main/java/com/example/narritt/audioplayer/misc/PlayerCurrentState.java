@@ -5,10 +5,13 @@ import android.util.Log;
 import com.example.narritt.audioplayer.items.Song;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
-    private ArrayList<Song> currentPlaylist;
+    private ArrayList<Song>
+            currentPlaylist,
+            shuffledPlaylist;
     private Song currentSong;
 
     public boolean
@@ -36,6 +39,11 @@ public class PlayerCurrentState {
     //++++ GETTERS ++++
     public ArrayList<Song>  getCurrentPlaylist(){
         return currentPlaylist;
+    }
+    public ArrayList<Song>  getShuffledPlaylist(){
+        shuffledPlaylist = (ArrayList<Song>) currentPlaylist.clone();
+        Collections.shuffle(shuffledPlaylist);
+        return shuffledPlaylist;
     }
     public Song             getCurrentSong(){
         return currentSong;

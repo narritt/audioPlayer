@@ -142,7 +142,7 @@ public class SongListMaster {
     }
     public boolean createPlaylistsList(){
         //playlistList.clear();
-        //TODO
+        //TODO method returning playlist[] of created playlists
         return playlistList.isEmpty();
     }
 
