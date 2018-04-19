@@ -409,6 +409,7 @@ public class PlayerActivity extends Activity {
     }
     public void btnCurrPlaylistClick(View view){
         Intent intent = new Intent(PlayerActivity.this, PlaylistDialogActivity.class);
+        //intent.putExtra("playlist", )
         startActivity(intent);
     }
 

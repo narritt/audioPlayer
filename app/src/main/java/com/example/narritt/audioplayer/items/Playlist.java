@@ -7,12 +7,12 @@ public class Playlist {
     private ArrayList<Song> playlist;
 
     public Playlist() {
-        name = new String();
+        //name = new String();
         playlist = new ArrayList<>();
     }
     public Playlist(String name) {
         this.name = name;
-        playlist = new ArrayList<Song>();
+        playlist = new ArrayList<>();
     }
     public Playlist(String name, ArrayList<Song> playlist) {
         this.name = name;

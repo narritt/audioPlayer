@@ -28,7 +28,7 @@ public class PrefMenu extends Fragment {
         ArrayList<String> menuItems = new ArrayList<>();
         menuItems.add(getActivity().getString(R.string.pref_equalizer));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, menuItems);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, menuItems);
         menu.setAdapter(adapter);
     }
 }
