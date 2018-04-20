@@ -127,34 +127,31 @@ public class PlayerActivity extends Activity {
             mediaPlayer.stop();
         pcs.setCurrentPlaylistAndSong(songs, position);
         mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
-        mediaPlayer.start();
         prepareInterface(songs.get(position));
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                //Log.i(TAG, "Track is completed");
-                if(pcs.getCurrentPlaylist() == null) {
-                    Log.e(TAG, "MP.onCompletion : currPlayList is empty, can't play.");
-                    stopPlay();
-                } else {
-                    int indexCurrSong = pcs.getCurrentSongIndex();
-                    if(!pcs.isRandom) {
-                        if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
-                            if(pcs.isLooping)
-                                play(pcs.getCurrentPlaylist(), 0);
-                            else {
-                                play(pcs.getCurrentPlaylist(), 0);
-                                stopPlay();
-                            }
+                int indexCurrSong = pcs.getCurrentSongIndex();
+                if(!pcs.isRandom) {
+                    if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
+                        if(pcs.isLooping)
+                            mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
+                        else {
+                            stopPlay();
+                            mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
                         }
-                        else
-                            play(pcs.getCurrentPlaylist(), indexCurrSong + 1);
-                    } else {
-                        play(pcs.getShuffledPlaylist(), new Random().nextInt(pcs.getPlaylistSize()));
                     }
+                    else
+                        mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(indexCurrSong + 1).getPath());
+                } else {
+                    //TODO normal randomizer
+                    play(pcs.getShuffledPlaylist(), new Random().nextInt(pcs.getPlaylistSize()));
                 }
             }
         });
+
+        mediaPlayer.start();
+        
         /*if(pcs.isMusicPlaying){
             Log.i(TAG, "Pull notification");
             Notification notif = new Notification(R.mipmap.ic_launcher, "Song", System.currentTimeMillis());
