@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Playlist {
     private String name;
     private ArrayList<Song> playlist;
+    private int currentPosition;
 
     public Playlist() {
         //name = new String();
@@ -21,9 +22,16 @@ public class Playlist {
     public Playlist(ArrayList<Song> playlist){
         this.playlist = playlist;
     }
+    public Playlist(ArrayList<Song> playlist, int currentPosition){
+        this.playlist = playlist;
+        this.currentPosition = currentPosition;
+    }
 
     public String getName() {
         return name;
+    }
+    public int getCurrentPosition() {
+        return currentPosition;
     }
     public ArrayList<Song> getPlaylist() {
         return playlist;

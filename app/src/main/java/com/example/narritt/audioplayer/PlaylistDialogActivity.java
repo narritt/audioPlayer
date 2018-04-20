@@ -37,7 +37,7 @@ public class PlaylistDialogActivity extends Activity {
         songListView = findViewById(R.id.playlist_song_list);
 
         ArrayList<String> playlist = new ArrayList<>();
-        Log.i(TAG, "SECOND ACTIVITY SHOW PLAYLIST \n" + pcs.getShowingInActivityPlaylist());
+        //Log.i(TAG, "SECOND ACTIVITY SHOW PLAYLIST \n" + pcs.getShowingInActivityPlaylist());
         for (Song s : pcs.getShowingInActivityPlaylist()){
             playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
         }
@@ -68,8 +68,13 @@ public class PlaylistDialogActivity extends Activity {
                 //editItem(info.position); // метод, выполняющий действие при редактировании пункта меню
                 return true;
             case R.id.context_menu_delete:
-                //pcs.getShowingInActivityPlaylist().remove(info.position);   //метод, выполняющий действие при удалении пункта меню
-                Log.i(TAG, "Song#" + info.position);
+                pcs.getShowingInActivityPlaylist().remove(info.position);   //метод, выполняющий действие при удалении пункта меню
+                /*ArrayList<String> playlist = new ArrayList<>();
+                for (Song s : pcs.getShowingInActivityPlaylist()){
+                    playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
+                songListView.setAdapter(adapter);*/
                 return true;
             default:
                 return super.onContextItemSelected(item);

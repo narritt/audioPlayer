@@ -3,6 +3,7 @@ package com.example.narritt.audioplayer.misc;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.narritt.audioplayer.items.Playlist;
 import com.example.narritt.audioplayer.items.Song;
 
 import java.io.BufferedReader;
@@ -48,7 +49,7 @@ public class FileMaster {
             Log.e(TAG, "ERROR WRITING CURRENT PLAYLIST FILE: " + e.toString() + " - " + e.getMessage());
         }
     }
-    public PlayerCurrentState readCurrentPlaylist(){
+    public Playlist readCurrentPlaylist(){
         ArrayList<Song> songs = new ArrayList<>();
         int currPosition = 0;
         try {
@@ -77,8 +78,9 @@ public class FileMaster {
         }
         if(songs.isEmpty())
             songs = null;
-        PlayerCurrentState plState = new PlayerCurrentState(songs, currPosition);
-        return plState;
+        //PlayerCurrentState plState = new PlayerCurrentState(songs, currPosition);
+        Playlist pl = new Playlist(songs, currPosition);
+        return pl;
     }
     // TODO : 02.03.18 creating and reading user playlist
 }

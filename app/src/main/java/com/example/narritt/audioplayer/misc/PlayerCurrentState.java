@@ -108,6 +108,10 @@ public class PlayerCurrentState {
         this.currentPlaylist = plState.getCurrentPlaylist();
         this.currentSong = plState.getCurrentSong();
     }
+    public void setCurrentPlaylistAndSong(Playlist playlist){
+        this.currentPlaylist = playlist.getPlaylist();
+        this.currentSong = playlist.getPlaylist().get(playlist.getCurrentPosition());
+    }
 
 
     public void openPlaylistActivity(Context context, ArrayList<Song> playlist){
@@ -117,7 +121,7 @@ public class PlayerCurrentState {
     }
     public void openPlaylistActivity(Context context){
         showingInActivityPlaylist = currentPlaylist;
-        Log.i(TAG, "SHOWING PLAYLIST: \n" + showingInActivityPlaylist);
+        //Log.i(TAG, "SHOWING PLAYLIST: \n" + showingInActivityPlaylist);
         Intent intent = new Intent(context, PlaylistDialogActivity.class);
         context.startActivity(intent);
     }
