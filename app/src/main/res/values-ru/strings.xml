@@ -17,5 +17,6 @@
     <string name="curr_playlist_message_songname">Название</string>
     <string name="curr_playlist_neg_button">Закрыть</string>
 
-
+    <string name="context_menu_edit">Редактировать</string>
+    <string name="context_menu_delete">Удалить</string>
 </resources>

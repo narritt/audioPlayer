@@ -1,7 +1,13 @@
 package com.example.narritt.audioplayer.misc;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.example.narritt.audioplayer.PlayerActivity;
+import com.example.narritt.audioplayer.PlaylistDialogActivity;
+import com.example.narritt.audioplayer.items.Playlist;
 import com.example.narritt.audioplayer.items.Song;
 
 import java.util.ArrayList;
@@ -11,8 +17,9 @@ public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
     private static PlayerCurrentState _instance;
     private ArrayList<Song>
-            currentPlaylist,
-            shuffledPlaylist;
+                currentPlaylist,
+                shuffledPlaylist,
+                showingInActivityPlaylist;
     private Song currentSong;
 
     public boolean
@@ -33,6 +40,7 @@ public class PlayerCurrentState {
             this.currentSong = songs.get(pos);
         else
             this.currentSong = null;
+        //this._instance = this;
     }
     public PlayerCurrentState(){
         this.currentPlaylist = null;
@@ -48,6 +56,9 @@ public class PlayerCurrentState {
         shuffledPlaylist = (ArrayList<Song>) currentPlaylist.clone();
         Collections.shuffle(shuffledPlaylist);
         return shuffledPlaylist;
+    }
+    public ArrayList<Song>  getShowingInActivityPlaylist(){
+        return showingInActivityPlaylist;
     }
     public Song             getCurrentSong(){
         return currentSong;
@@ -96,5 +107,18 @@ public class PlayerCurrentState {
     public void setCurrentPlaylistAndSong(PlayerCurrentState plState){
         this.currentPlaylist = plState.getCurrentPlaylist();
         this.currentSong = plState.getCurrentSong();
+    }
+
+
+    public void openPlaylistActivity(Context context, ArrayList<Song> playlist){
+        showingInActivityPlaylist = playlist;
+        Intent intent = new Intent(context, PlaylistDialogActivity.class);
+        context.startActivity(intent);
+    }
+    public void openPlaylistActivity(Context context){
+        showingInActivityPlaylist = currentPlaylist;
+        Log.i(TAG, "SHOWING PLAYLIST: \n" + showingInActivityPlaylist);
+        Intent intent = new Intent(context, PlaylistDialogActivity.class);
+        context.startActivity(intent);
     }
 }

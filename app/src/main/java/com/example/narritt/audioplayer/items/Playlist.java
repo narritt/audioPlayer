@@ -18,6 +18,9 @@ public class Playlist {
         this.name = name;
         this.playlist = playlist;
     }
+    public Playlist(ArrayList<Song> playlist){
+        this.playlist = playlist;
+    }
 
     public String getName() {
         return name;

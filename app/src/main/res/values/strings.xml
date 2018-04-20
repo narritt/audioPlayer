@@ -17,6 +17,9 @@
     <string name="curr_playlist_message_songname">Title</string>
     <string name="curr_playlist_neg_button">Close</string>
 
+    <string name="context_menu_edit">Edit</string>
+    <string name="context_menu_delete">Delete</string>
+
 
     <string name="title_activity_playlists">PlaylistsActivity</string>
     <string name="timestamp_track_start">0:00</string>
