@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class PlaylistDialogActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
 
+    Bundle extras;
     ListView songListView;
 
     private PlayerCurrentState pcs = PlayerCurrentState.get_instance();
@@ -31,18 +32,12 @@ public class PlaylistDialogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_dialog);
+        extras = getIntent().getExtras();
         TextView TVnum_and_name = findViewById(R.id.numandname);
         TVnum_and_name.setText("№" + getString(R.string.tab) + getString(R.string.curr_playlist_message_songname));
 
         songListView = findViewById(R.id.playlist_song_list);
-
-        ArrayList<String> playlist = new ArrayList<>();
-        //Log.i(TAG, "SECOND ACTIVITY SHOW PLAYLIST \n" + pcs.getShowingInActivityPlaylist());
-        for (Song s : pcs.getShowingInActivityPlaylist()){
-            playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
-        songListView.setAdapter(adapter);
+        reloadListView();
         songListView.setOnItemClickListener(listener);
         registerForContextMenu(songListView);
     }
@@ -69,15 +64,30 @@ public class PlaylistDialogActivity extends Activity {
                 return true;
             case R.id.context_menu_delete:
                 pcs.getShowingInActivityPlaylist().remove(info.position);   //метод, выполняющий действие при удалении пункта меню
-                /*ArrayList<String> playlist = new ArrayList<>();
-                for (Song s : pcs.getShowingInActivityPlaylist()){
-                    playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
-                songListView.setAdapter(adapter);*/
+                reloadListView();
                 return true;
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    public void reloadListView(){
+        ArrayList<String> playlist = new ArrayList<>();
+        for (Song s : pcs.getShowingInActivityPlaylist()){
+            playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
+        songListView.setAdapter(adapter);
+    }
+
+    public void btnCloseClick(View view){
+        finish();
+    }
+
+    @Override
+    protected void onStop() {
+        if (extras.getString("PLAYLIST").equals("CURRENT"))
+            pcs.setCurrentPlaylist(pcs.getShowingInActivityPlaylist());
+        super.onStop();
     }
 }

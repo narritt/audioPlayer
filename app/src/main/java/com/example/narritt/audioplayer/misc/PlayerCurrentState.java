@@ -117,12 +117,14 @@ public class PlayerCurrentState {
     public void openPlaylistActivity(Context context, ArrayList<Song> playlist){
         showingInActivityPlaylist = playlist;
         Intent intent = new Intent(context, PlaylistDialogActivity.class);
+        intent.putExtra("PLAYLIST", "OTHER");
         context.startActivity(intent);
     }
     public void openPlaylistActivity(Context context){
         showingInActivityPlaylist = currentPlaylist;
         //Log.i(TAG, "SHOWING PLAYLIST: \n" + showingInActivityPlaylist);
         Intent intent = new Intent(context, PlaylistDialogActivity.class);
+        intent.putExtra("PLAYLIST", "CURRENT");
         context.startActivity(intent);
     }
 }
