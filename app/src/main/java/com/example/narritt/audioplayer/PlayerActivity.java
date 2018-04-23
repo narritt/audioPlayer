@@ -134,15 +134,17 @@ public class PlayerActivity extends Activity {
                 int indexCurrSong = pcs.getCurrentSongIndex();
                 if(!pcs.isRandom) {
                     if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
-                        if(pcs.isLooping)
-                            mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
-                        else {
+                        //mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
+                        Log.i(TAG, "OnCompletionListener(), next song with 0 pos" );
+                        play(pcs.getCurrentPlaylist(), 0);
+                        if(!pcs.isLooping)
                             stopPlay();
-                            mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
-                        }
                     }
-                    else
-                        mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(indexCurrSong + 1).getPath());
+                    else {
+                        //mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(indexCurrSong + 1).getPath());
+                        Log.i(TAG, "OnCompletionListener(), next song with " + (indexCurrSong + 1) + " pos" );
+                        play(pcs.getCurrentPlaylist(), indexCurrSong + 1);
+                    }
                 } else {
                     //TODO normal randomizer
                     play(pcs.getShuffledPlaylist(), new Random().nextInt(pcs.getPlaylistSize()));
@@ -151,7 +153,7 @@ public class PlayerActivity extends Activity {
         });
 
         mediaPlayer.start();
-        
+
         /*if(pcs.isMusicPlaying){
             Log.i(TAG, "Pull notification");
             Notification notif = new Notification(R.mipmap.ic_launcher, "Song", System.currentTimeMillis());
@@ -203,7 +205,6 @@ public class PlayerActivity extends Activity {
 
         artistName.setText(song.getArtist());
         albumName.setText(song.getAlbum());
-        //artistName.setText(song.getArtist() + " — " + song.getAlbum());
         songName.setText(song.getTitle());
 
         startTime = mediaPlayer.getCurrentPosition();
