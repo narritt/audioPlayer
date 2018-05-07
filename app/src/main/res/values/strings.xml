@@ -12,6 +12,8 @@
     <string name="saveCurrentPlaylist">Save playlist</string>
 
     <string name="pref_equalizer">Equalizer</string>
+    <string name="pref_night_mode">Night mode</string>
+    <string name="pref_summary_night_mode">Color inversion</string>
 
     <string name="curr_playlist_title">Current playlist</string>
     <string name="curr_playlist_message_songname">Title</string>
@@ -19,6 +21,14 @@
 
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_delete">Delete</string>
+
+    <string name="pref_equalizer_seekbar_title_1">60 Hz</string>
+    <string name="pref_equalizer_seekbar_title_2">230 Hz</string>
+    <string name="pref_equalizer_seekbar_title_3">910 Hz</string>
+    <string name="pref_equalizer_seekbar_title_4">3.6 kHz</string>
+    <string name="pref_equalizer_seekbar_title_5">14 kHz</string>
+    <string name="pref_equalizer_15db">+15dB</string>
+    <string name="pref_equalizer_min15db">-15dB</string>
 
 
     <string name="title_activity_playlists">PlaylistsActivity</string>

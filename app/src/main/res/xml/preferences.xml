@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference android:title="@string/pref_equalizer" >
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://www.example.com" />
+    </Preference>
+    <CheckBoxPreference
+        android:key="pref_night_mode"
+        android:summary="@string/pref_summary_night_mode"
+        android:title="@string/pref_night_mode"
+        android:defaultValue="false" />
+</PreferenceScreen>

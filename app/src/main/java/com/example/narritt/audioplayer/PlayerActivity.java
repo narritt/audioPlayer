@@ -24,6 +24,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.narritt.audioplayer.Preferences.PrefActivity;
 import com.example.narritt.audioplayer.items.Song;
 import com.example.narritt.audioplayer.misc.FileMaster;
 import com.example.narritt.audioplayer.misc.PlayerCurrentState;
@@ -39,8 +40,10 @@ public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
     static PlayerActivity instance;
 
-    public static MediaPlayer mediaPlayer;
+    //public static MediaPlayer mediaPlayer;
     public PlayerCurrentState pcs = new PlayerCurrentState();
+
+    ArrayList<Song> currPlaylistForCompletionListener;
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
@@ -49,7 +52,7 @@ public class PlayerActivity extends Activity {
     double startTime, finalTime;
 
     FileMaster fileMaster;
-    Handler myHandler = new Handler();
+    Handler myHandler = new Handler();      //handler for runnable UpdateSongTime method
 
     //NotificationManager nm;
 
@@ -64,26 +67,13 @@ public class PlayerActivity extends Activity {
         Log.i(TAG, "OnCreate in " + this.getLocalClassName());
         instance = this;
         checkPermission();
-
-        //Finding elements in R
-        btnPlay =               findViewById(R.id.btnPlay);
-        btnLoop =               findViewById(R.id.btnLoop);
-        btnRand =               findViewById(R.id.btnRand);
-        btnNext =               findViewById(R.id.btnNext);
-        btnPrev =               findViewById(R.id.btnPrev);
-        artistName =            findViewById(R.id.strArtistName);
-        albumName =             findViewById(R.id.strAlbumName);
-        songName =              findViewById(R.id.strSongName);
-        songDuration =          findViewById(R.id.strSongDuration);
-        currentSongPosition =   findViewById(R.id.strCurrentSongPosition);
-        progressControl =       findViewById(R.id.progressControl);
-        imgAlbum =              findViewById(R.id.imgAlbum);
+        findViews();
 
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
         pcs.setCurrentPlaylistAndSong(fileMaster.readCurrentPlaylist());
         if (pcs.getCurrentSong() != null) {
-            mediaPlayer = MediaPlayer.create(this, pcs.getCurrentSong().getPath());
+            pcs.createNewMPCurrSong(this);      //MediaPlayer.create(this, pcs.getCurrentSong().getPath())
             prepareInterface(pcs.getCurrentSong());
         }
 
@@ -93,23 +83,23 @@ public class PlayerActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser) {
-                    mediaPlayer.seekTo(progress);
+                    pcs.getMediaPlayer().seekTo(progress);
                     UpdateSongTimeManualy();
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
+                if (pcs.getMediaPlayer().isPlaying()) {
+                    pcs.getMediaPlayer().pause();
                     pausedOnTouch = true;
                 }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if( (!mediaPlayer.isPlaying()) && (pausedOnTouch)){
-                    mediaPlayer.start();
+                if( (!pcs.getMediaPlayer().isPlaying()) && (pausedOnTouch)){
+                    pcs.getMediaPlayer().start();
                     pausedOnTouch = false;
                 }
             }
@@ -123,37 +113,36 @@ public class PlayerActivity extends Activity {
      */
     public void play(ArrayList<Song> songs, int position){
         pcs.isMusicPlaying = true;
-        if(mediaPlayer != null) //if its a first start of application
-            mediaPlayer.stop();
+        if(pcs.getMediaPlayer() != null) //if its a first start of application
+            pcs.getMediaPlayer().stop();
         pcs.setCurrentPlaylistAndSong(songs, position);
-        mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
+        pcs.createNewMP(this, songs.get(position).getPath());
+        //mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
         prepareInterface(songs.get(position));
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+        pcs.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                if(pcs.isRandom)
+                    currPlaylistForCompletionListener = pcs.getShuffledPlaylist(); //TODO normal randomizer
+                else
+                    currPlaylistForCompletionListener = pcs.getCurrentPlaylist();
+                //TODO one song cycle
                 int indexCurrSong = pcs.getCurrentSongIndex();
-                if(!pcs.isRandom) {
-                    if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
-                        //mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(0).getPath());
-                        Log.i(TAG, "OnCompletionListener(), next song with 0 pos" );
-                        play(pcs.getCurrentPlaylist(), 0);
-                        if(!pcs.isLooping)
-                            stopPlay();
-                    }
-                    else {
-                        //mediaPlayer = MediaPlayer.create(getApplicationContext(), pcs.getCurrentPlaylist().get(indexCurrSong + 1).getPath());
-                        Log.i(TAG, "OnCompletionListener(), next song with " + (indexCurrSong + 1) + " pos" );
-                        play(pcs.getCurrentPlaylist(), indexCurrSong + 1);
-                    }
-                } else {
-                    //TODO normal randomizer
-                    play(pcs.getShuffledPlaylist(), new Random().nextInt(pcs.getPlaylistSize()));
+                if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
+                    play(currPlaylistForCompletionListener, 0);
+                    if(!pcs.isLooping)
+                        stopPlay();
+                }
+                else {
+                    play(currPlaylistForCompletionListener, indexCurrSong + 1);
                 }
             }
         });
 
-        mediaPlayer.start();
+        pcs.getMediaPlayer().start();
 
+        //TODO notification widget
         /*if(pcs.isMusicPlaying){
             Log.i(TAG, "Pull notification");
             Notification notif = new Notification(R.mipmap.ic_launcher, "Song", System.currentTimeMillis());
@@ -170,24 +159,24 @@ public class PlayerActivity extends Activity {
         }
     }
     public void pausePlay(){
-        mediaPlayer.pause();
+        pcs.getMediaPlayer().pause();
         pcs.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
         //nm.cancel(1);
     }
     public void resumePlay(){
-        mediaPlayer.start();
+        pcs.getMediaPlayer().start();
         pcs.isMusicPlaying = true;
         btnPlay.setImageResource(R.drawable.pause);
         myHandler.postDelayed(UpdateSongTime,100);
     }
     private void stopPlay(){
-        mediaPlayer.stop();
+        pcs.getMediaPlayer().stop();
         pcs.isMusicPlaying = false;
         btnPlay.setImageResource(R.drawable.play);
         try {
-            mediaPlayer.prepare();
-            mediaPlayer.seekTo(0);
+            pcs.getMediaPlayer().prepare();
+            pcs.getMediaPlayer().seekTo(0);
         }
         catch (Throwable t) {
             Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -207,8 +196,8 @@ public class PlayerActivity extends Activity {
         albumName.setText(song.getAlbum());
         songName.setText(song.getTitle());
 
-        startTime = mediaPlayer.getCurrentPosition();
-        finalTime = mediaPlayer.getDuration();
+        startTime = pcs.getMediaPlayer().getCurrentPosition();
+        finalTime = pcs.getMediaPlayer().getDuration();
 
         loadAlbumCover(song);
 
@@ -299,7 +288,7 @@ public class PlayerActivity extends Activity {
         return result;
     }
     private void UpdateSongTimeManualy(){
-        startTime = mediaPlayer.getCurrentPosition();
+        startTime = pcs.getMediaPlayer().getCurrentPosition();
         //defense for 0-9 seconds position for string like 1:9, should be 1:09
         if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
             currentSongPosition.setText(String.format("%d:0%d",
@@ -315,7 +304,7 @@ public class PlayerActivity extends Activity {
         @Override
         public void run() {
             if(!pcs.isApplicationDestroying) {
-                startTime = mediaPlayer.getCurrentPosition();
+                startTime = pcs.getMediaPlayer().getCurrentPosition();
                 //defense for 0-9 seconds position for string like 1:9, should be 1:09
                 if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
                     currentSongPosition.setText(String.format("%d:0%d",
@@ -346,8 +335,8 @@ public class PlayerActivity extends Activity {
         }
     }
     public void btnPrevClick(View view){
-        if (mediaPlayer.getCurrentPosition() > 1500) {
-            mediaPlayer.seekTo(0);
+        if (pcs.getMediaPlayer().getCurrentPosition() > 1500) {
+            pcs.getMediaPlayer().seekTo(0);
             UpdateSongTimeManualy();
         } else {
             if(pcs.getCurrentPlaylist() != null) {
@@ -410,6 +399,20 @@ public class PlayerActivity extends Activity {
     /*
      * SYSTEM LOGIC
      */
+    private void findViews(){
+        btnPlay =               findViewById(R.id.btnPlay);
+        btnLoop =               findViewById(R.id.btnLoop);
+        btnRand =               findViewById(R.id.btnRand);
+        btnNext =               findViewById(R.id.btnNext);
+        btnPrev =               findViewById(R.id.btnPrev);
+        artistName =            findViewById(R.id.strArtistName);
+        albumName =             findViewById(R.id.strAlbumName);
+        songName =              findViewById(R.id.strSongName);
+        songDuration =          findViewById(R.id.strSongDuration);
+        currentSongPosition =   findViewById(R.id.strCurrentSongPosition);
+        progressControl =       findViewById(R.id.progressControl);
+        imgAlbum =              findViewById(R.id.imgAlbum);
+    }
     private void checkPermission(){
         int requestCode = 0;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -439,11 +442,11 @@ public class PlayerActivity extends Activity {
 
     /*  Освобождает используемые проигрывателем ресурсы */
     private void releaseMP() {
-        if (mediaPlayer != null) {
+        if (pcs.getMediaPlayer() != null) {
             stopPlay();
             try {
-                mediaPlayer.release();
-                mediaPlayer = null;
+                pcs.getMediaPlayer().release();
+                pcs.destroyMP();
             } catch (Exception e) {
                 e.printStackTrace();
             }

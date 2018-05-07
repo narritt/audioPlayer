@@ -3,6 +3,10 @@ package com.example.narritt.audioplayer.misc;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
+import android.net.Uri;
 import android.util.Log;
 
 import com.example.narritt.audioplayer.PlayerActivity;
@@ -16,6 +20,9 @@ import java.util.Collections;
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
     private static PlayerCurrentState _instance;
+    private static MediaPlayer mediaPlayer;
+    private static AudioManager audioManager;
+    private static Equalizer equalizer;
     private ArrayList<Song>
                 currentPlaylist,
                 shuffledPlaylist,
@@ -81,6 +88,12 @@ public class PlayerCurrentState {
     public static PlayerCurrentState get_instance(){
         return _instance;
     }
+    public MediaPlayer      getMediaPlayer() {
+        return mediaPlayer;
+    }
+    public Equalizer        getEqualizer() {
+        return equalizer;
+    }
 
     //++++ SETTERS ++++
     public void setCurrentPlaylist(ArrayList<Song> songList){
@@ -113,6 +126,17 @@ public class PlayerCurrentState {
         this.currentSong = playlist.getPlaylist().get(playlist.getCurrentPosition());
     }
 
+    public void destroyMP(){
+        mediaPlayer = null;
+    }
+    public void createNewMPCurrSong(PlayerActivity activity){
+        mediaPlayer = MediaPlayer.create(activity, currentSong.getPath());
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+    }   //mediaplayer on currentSong
+    public void createNewMP(PlayerActivity activity, Uri path){
+        mediaPlayer = MediaPlayer.create(activity, path);
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+    }      //mediaplayer on custom uri song
 
     public void openPlaylistActivity(Context context, ArrayList<Song> playlist){
         showingInActivityPlaylist = playlist;

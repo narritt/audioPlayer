@@ -12,6 +12,8 @@
     <string name="saveCurrentPlaylist">Сохранить плейлист</string>
 
     <string name="pref_equalizer">Эквалайзер</string>
+    <string name="pref_night_mode">Ночной режим</string>
+    <string name="pref_summary_night_mode">Цветовая инверсия</string>
 
     <string name="curr_playlist_title">Текущий плейлист</string>
     <string name="curr_playlist_message_songname">Название</string>
