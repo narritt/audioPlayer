@@ -34,11 +34,21 @@ public class Song {
         albumId = tmpSong.albumId;
     }
 
-    public long     getID(){return id;}
-    public String   getTitle(){return title;}
-    public String   getAlbum() {return album;}
-    public String   getArtist(){return artist;}
-    public int      getPosition() {return position;}
+    public long     getID(){
+        return id;
+    }
+    public String   getTitle(){
+        return title;
+    }
+    public String   getAlbum() {
+        return album;
+    }
+    public String   getArtist(){
+        return artist;
+    }
+    public int      getPosition() {
+        return position;
+    }
     public Uri      getPath()  {
         return Uri.parse("file://" + path);
     }
@@ -48,7 +58,9 @@ public class Song {
     public String   getFolderPathString(){
         return path.substring(0, path.lastIndexOf("/"));
     }
-    public long     getAlbumId(){return albumId;}
+    public long     getAlbumId(){
+        return albumId;
+    }
 
     public String toString(){
         return ("ID:" + this.id +

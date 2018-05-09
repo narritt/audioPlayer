@@ -163,7 +163,7 @@
                 android:layout_weight="1"
                 android:id="@+id/btnLoop"
                 android:onClick="btnLoopClick"
-                android:src="@drawable/loop_off"
+                android:src="@drawable/loop_off1"
                 android:background="@drawable/btn_none_borders" />
             <ImageButton
                 android:layout_width="match_parent"

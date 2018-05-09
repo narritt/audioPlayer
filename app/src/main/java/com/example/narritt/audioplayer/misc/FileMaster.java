@@ -49,6 +49,7 @@ public class FileMaster {
             Log.e(TAG, "ERROR WRITING CURRENT PLAYLIST FILE: " + e.toString() + " - " + e.getMessage());
         }
     }
+
     public Playlist readCurrentPlaylist(){
         ArrayList<Song> songs = new ArrayList<>();
         int currPosition = 0;
@@ -74,7 +75,7 @@ public class FileMaster {
         } catch (FileNotFoundException e) {
             Log.e(TAG, "CURRENT SONG FILE NOT FOUND WHILE READING: " + e.getMessage());
         } catch (Exception e) {
-            Log.e(TAG, "Freaking exception while reading current playlist : " + e.toString());
+            Log.e(TAG, "Weird exception while reading current playlist : " + e.toString());
         }
         if(songs.isEmpty())
             songs = null;
