@@ -77,7 +77,10 @@ public class SongListMaster {
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisAlbum = musicCursor.getString(albumColumn);
-                int thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
+                int thisPosition = 0;
+                try {
+                    thisPosition = Integer.parseInt(musicCursor.getString(posColumn));
+                } catch (Exception e){};
                 String thisPath = musicCursor.getString(pathColumn);
                 long albumId = musicCursor.getLong(albumIdColumn);
                 //String coverPath = getCoverArtPath(albumId);

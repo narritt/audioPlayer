@@ -16,6 +16,7 @@ import com.example.narritt.audioplayer.items.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
@@ -32,8 +33,13 @@ public class PlayerCurrentState {
     public boolean
             isMusicPlaying = false,
             isApplicationDestroying = false,
-            isRandom,
-            isLooping;
+            isRandom;
+            /*isLooping*/
+
+    public enum Looping {
+        OFF, ON, ON_ONE_SONG
+    }
+    public Looping isLooping;
 
     public PlayerCurrentState(ArrayList<Song> songs, Song currSong){
         this.currentPlaylist = songs;
@@ -52,6 +58,8 @@ public class PlayerCurrentState {
     public PlayerCurrentState(){
         this.currentPlaylist = null;
         this.currentSong = null;
+        //TODO save state of isLooping and Random
+        this.isLooping = Looping.OFF;
         this._instance = this;
     }
 
@@ -85,14 +93,15 @@ public class PlayerCurrentState {
         Log.i(TAG, "Current album id is " + currentSong.getAlbumId());
         return currentSong.getAlbumId();
     }
-    public static PlayerCurrentState get_instance(){
-        return _instance;
-    }
     public MediaPlayer      getMediaPlayer() {
         return mediaPlayer;
     }
     public Equalizer        getEqualizer() {
         return equalizer;
+    }
+
+    public static PlayerCurrentState get_instance(){
+        return _instance;
     }
 
     //++++ SETTERS ++++
@@ -150,5 +159,17 @@ public class PlayerCurrentState {
         Intent intent = new Intent(context, PlaylistDialogActivity.class);
         intent.putExtra("PLAYLIST", "CURRENT");
         context.startActivity(intent);
+    }
+
+    public void sortCurrentPlaylist(){
+        Collections.sort(currentPlaylist, new Comparator<Song>(){
+            public int compare(Song a, Song b){
+                int cmp;
+                if      (a.getPosition() > b.getPosition()) cmp = +1;
+                else if (a.getPosition() < b.getPosition()) cmp = -1;
+                else    cmp = 0;
+                return cmp;
+            }
+        });
     }
 }

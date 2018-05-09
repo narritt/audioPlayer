@@ -2,6 +2,7 @@ package com.example.narritt.audioplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -31,7 +32,6 @@ import com.example.narritt.audioplayer.misc.PlayerCurrentState;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 //import static android.app.Notification.FLAG_ONGOING_EVENT;
@@ -40,10 +40,7 @@ public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
     static PlayerActivity instance;
 
-    //public static MediaPlayer mediaPlayer;
     public PlayerCurrentState pcs = new PlayerCurrentState();
-
-    ArrayList<Song> currPlaylistForCompletionListener;
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
@@ -54,11 +51,8 @@ public class PlayerActivity extends Activity {
     FileMaster fileMaster;
     Handler myHandler = new Handler();      //handler for runnable UpdateSongTime method
 
-    //NotificationManager nm;
-
-
     //TODO notification
-    //todo WTF THIS BUG стартует иузыка при переключении песен на короткое время
+    NotificationManager nm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +70,8 @@ public class PlayerActivity extends Activity {
             pcs.createNewMPCurrSong(this);      //MediaPlayer.create(this, pcs.getCurrentSong().getPath())
             prepareInterface(pcs.getCurrentSong());
         }
+        if(pcs.getMediaPlayer() != null)
+            pcs.getMediaPlayer().setOnCompletionListener(MPCompletionListener);
 
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             boolean pausedOnTouch;
@@ -117,29 +113,9 @@ public class PlayerActivity extends Activity {
             pcs.getMediaPlayer().stop();
         pcs.setCurrentPlaylistAndSong(songs, position);
         pcs.createNewMP(this, songs.get(position).getPath());
-        //mediaPlayer = MediaPlayer.create(this, songs.get(position).getPath());
         prepareInterface(songs.get(position));
 
-        pcs.getMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if(pcs.isRandom)
-                    currPlaylistForCompletionListener = pcs.getShuffledPlaylist(); //TODO normal randomizer
-                else
-                    currPlaylistForCompletionListener = pcs.getCurrentPlaylist();
-                //TODO one song cycle
-                int indexCurrSong = pcs.getCurrentSongIndex();
-                if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
-                    play(currPlaylistForCompletionListener, 0);
-                    if(!pcs.isLooping)
-                        stopPlay();
-                }
-                else {
-                    play(currPlaylistForCompletionListener, indexCurrSong + 1);
-                }
-            }
-        });
-
+        pcs.getMediaPlayer().setOnCompletionListener(MPCompletionListener);
         pcs.getMediaPlayer().start();
 
         //TODO notification widget
@@ -354,7 +330,7 @@ public class PlayerActivity extends Activity {
             int indexCurrSong = pcs.getCurrentSongIndex();
             if (indexCurrSong == pcs.getPlaylistSize() - 1) {   //if this is last song of playlist
                 playDependingOn_isMusicPlaying(pcs.getCurrentPlaylist(), 0);
-                if (!pcs.isLooping)
+                if (pcs.isLooping == PlayerCurrentState.Looping.OFF)
                     stopPlay();
             } else {
                 playDependingOn_isMusicPlaying(pcs.getCurrentPlaylist(), indexCurrSong + 1);
@@ -362,20 +338,31 @@ public class PlayerActivity extends Activity {
         }
     }
     public void btnLoopClick(View view){
-        //TODO : 02.03.18 one song looping
-        if (pcs.isLooping) {
-            btnLoop.setImageResource(R.drawable.loop_off);
+        if (pcs.isLooping == PlayerCurrentState.Looping.ON) {
+            btnLoop.setImageResource(R.drawable.loop_on_one);
+            pcs.isLooping = PlayerCurrentState.Looping.ON_ONE_SONG;
+            return;
         }
-        else {
-            btnLoop.setImageResource(R.drawable.loop_on);
+        if (pcs.isLooping == PlayerCurrentState.Looping.ON_ONE_SONG){
+            btnLoop.setImageResource(R.drawable.loop_off1);
+            pcs.isLooping = PlayerCurrentState.Looping.OFF;
+            return;
         }
-        pcs.isLooping = !pcs.isLooping;
+        if (pcs.isLooping == PlayerCurrentState.Looping.OFF){
+            btnLoop.setImageResource(R.drawable.loop_on1);
+            pcs.isLooping = PlayerCurrentState.Looping.ON;
+            return;
+        }
     }
     public void btnRandClick(View view){
-        if (pcs.isRandom)
+        if (pcs.isRandom) {
             btnRand.setImageResource(R.drawable.rand_off);
-        else
+            pcs.sortCurrentPlaylist();
+        }
+        else {
             btnRand.setImageResource(R.drawable.rand_on);
+            pcs.setCurrentPlaylist(pcs.getShuffledPlaylist());
+        }
         pcs.isRandom = !pcs.isRandom;
     }
     public void btnToArtists(View view){
@@ -455,4 +442,26 @@ public class PlayerActivity extends Activity {
     public static PlayerActivity getInstance() {
         return instance;
     }
+
+    MediaPlayer.OnCompletionListener MPCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+            int indexCurrSong = pcs.getCurrentSongIndex();
+
+            if(pcs.isLooping == PlayerCurrentState.Looping.ON_ONE_SONG){
+                Log.i(TAG, "Looping is: ONE_SONG");
+                play(pcs.getCurrentPlaylist(), indexCurrSong);
+                return;
+            }
+
+            if (indexCurrSong >= pcs.getPlaylistSize() - 1) {
+                play(pcs.getCurrentPlaylist(), 0);
+                if (pcs.isLooping == PlayerCurrentState.Looping.OFF)
+                    stopPlay();
+            } else {
+                play(pcs.getCurrentPlaylist(), indexCurrSong + 1);
+            }
+        }
+    };
 }
