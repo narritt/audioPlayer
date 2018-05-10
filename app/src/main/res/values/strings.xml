@@ -12,6 +12,8 @@
     <string name="saveCurrentPlaylist">Save playlist</string>
 
     <string name="pref_equalizer">Equalizer</string>
+    <string name="pref_equalizer_bass_boost">Bass boost</string>
+    <string name="pref_equalizer_bass_boost_not_supported">BassBoost is not supported on your device</string>
     <string name="pref_night_mode">Night mode</string>
     <string name="pref_summary_night_mode">Color inversion</string>
 
@@ -21,6 +23,9 @@
 
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_delete">Delete</string>
+
+    <string name="error_play_pick_track">You should pick a track</string>
+    <string name="error_playlist_empty">Picked playlist is empty</string>
 
     <string name="pref_equalizer_seekbar_title_1">60 Hz</string>
     <string name="pref_equalizer_seekbar_title_2">230 Hz</string>

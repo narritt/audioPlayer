@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.util.Log;
@@ -21,9 +22,11 @@ import java.util.Comparator;
 public class PlayerCurrentState {
     private static final String TAG = "MyAudioPlayer";
     private static PlayerCurrentState _instance;
+    private static PlayerActivity playerActivity;
     private static MediaPlayer mediaPlayer;
     private static AudioManager audioManager;
     private static Equalizer equalizer;
+    private static BassBoost bassBoost;
     private ArrayList<Song>
                 currentPlaylist,
                 shuffledPlaylist,
@@ -34,7 +37,6 @@ public class PlayerCurrentState {
             isMusicPlaying = false,
             isApplicationDestroying = false,
             isRandom;
-            /*isLooping*/
 
     public enum Looping {
         OFF, ON, ON_ONE_SONG
@@ -55,12 +57,13 @@ public class PlayerCurrentState {
             this.currentSong = null;
         //this._instance = this;
     }
-    public PlayerCurrentState(){
+    public PlayerCurrentState(PlayerActivity activity){
         this.currentPlaylist = null;
         this.currentSong = null;
         //TODO save state of isLooping and Random
         this.isLooping = Looping.OFF;
         this._instance = this;
+        playerActivity = activity;
     }
 
     //++++ GETTERS ++++
@@ -99,9 +102,15 @@ public class PlayerCurrentState {
     public Equalizer        getEqualizer() {
         return equalizer;
     }
+    public BassBoost        getBassBoost() {
+        return bassBoost;
+    }
 
     public static PlayerCurrentState get_instance(){
         return _instance;
+    }
+    public static PlayerActivity getPlayerActivity(){
+        return playerActivity;
     }
 
     //++++ SETTERS ++++
@@ -131,8 +140,10 @@ public class PlayerCurrentState {
         this.currentSong = plState.getCurrentSong();
     }
     public void setCurrentPlaylistAndSong(Playlist playlist){
-        this.currentPlaylist = playlist.getPlaylist();
-        this.currentSong = playlist.getPlaylist().get(playlist.getCurrentPosition());
+        if (playlist.getPlaylist()!=null) {
+            this.currentPlaylist = playlist.getPlaylist();
+            this.currentSong = playlist.getPlaylist().get(playlist.getCurrentPosition());
+        }
     }
 
     public void destroyMP(){
@@ -140,12 +151,16 @@ public class PlayerCurrentState {
     }
     public void createNewMPCurrSong(PlayerActivity activity){
         mediaPlayer = MediaPlayer.create(activity, currentSong.getPath());
-        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        identificateEffects();
     }   //mediaplayer on currentSong
     public void createNewMP(PlayerActivity activity, Uri path){
         mediaPlayer = MediaPlayer.create(activity, path);
-        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        identificateEffects();
     }      //mediaplayer on custom uri song
+    private void identificateEffects(){
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        bassBoost = new BassBoost(0, mediaPlayer.getAudioSessionId());
+    }
 
     public void openPlaylistActivity(Context context, ArrayList<Song> playlist){
         showingInActivityPlaylist = playlist;

@@ -45,7 +45,9 @@ public class PlaylistDialogActivity extends Activity {
     private AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(PlaylistDialogActivity.this, "Click on " + pcs.getCurrentPlaylist().get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(PlaylistDialogActivity.this, "Click on " + pcs.getCurrentPlaylist().get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                pcs.getPlayerActivity().play(pcs.getShowingInActivityPlaylist(), position);
+                finish();
             }
         };
     @Override
@@ -73,11 +75,23 @@ public class PlaylistDialogActivity extends Activity {
 
     public void reloadListView(){
         ArrayList<String> playlist = new ArrayList<>();
-        for (Song s : pcs.getShowingInActivityPlaylist()){
-            playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1);
+        try {
+            for (Song s : pcs.getShowingInActivityPlaylist()){
+                playlist.add(s.getPosition() + getString(R.string.tab) + s.getTitle());
+            }
+
+        } catch (NullPointerException e){
+            playlist.add(getApplicationContext().getString(R.string.error_playlist_empty));
+            Toast.makeText(this, R.string.error_playlist_empty, Toast.LENGTH_SHORT).show();
+        } catch (Exception e){
+            playlist.add(e.getMessage());
+            Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
+            songListView.setAdapter(adapter);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
-        songListView.setAdapter(adapter);
+
     }
 
     public void btnCloseClick(View view){

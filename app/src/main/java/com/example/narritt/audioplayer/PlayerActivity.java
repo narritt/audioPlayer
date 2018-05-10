@@ -40,7 +40,7 @@ public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
     static PlayerActivity instance;
 
-    public PlayerCurrentState pcs = new PlayerCurrentState();
+    public PlayerCurrentState pcs = new PlayerCurrentState(this);
 
     ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
@@ -300,22 +300,26 @@ public class PlayerActivity extends Activity {
      * BUTTON LOGIC
      */
     public void btnPlayClick(View view){
-        if(/*currPlaylist*/ pcs.getCurrentPlaylist() == null) {
-            Toast.makeText(this, "Сначала нужно выбрать трек!", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            if (pcs.isMusicPlaying)
-                pausePlay();
-            else
-                resumePlay();
+        try {
+            if(pcs.getCurrentPlaylist() == null) {
+                Toast.makeText(this, R.string.error_play_pick_track, Toast.LENGTH_SHORT).show();
+            }
+            else {
+                if (pcs.isMusicPlaying)
+                    pausePlay();
+                else
+                    resumePlay();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.error_play_pick_track, Toast.LENGTH_SHORT).show();
         }
     }
     public void btnPrevClick(View view){
-        if (pcs.getMediaPlayer().getCurrentPosition() > 1500) {
-            pcs.getMediaPlayer().seekTo(0);
-            UpdateSongTimeManualy();
-        } else {
-            if(pcs.getCurrentPlaylist() != null) {
+        if(pcs.getCurrentPlaylist() != null) {
+            if (pcs.getMediaPlayer().getCurrentPosition() > 1500) {
+                pcs.getMediaPlayer().seekTo(0);
+                UpdateSongTimeManualy();
+            } else {
                 int indexCurrSong = pcs.getCurrentSongIndex();
                 if (indexCurrSong == 0) {
                     playDependingOn_isMusicPlaying(pcs.getCurrentPlaylist(), pcs.getPlaylistSize() - 1);
@@ -355,15 +359,26 @@ public class PlayerActivity extends Activity {
         }
     }
     public void btnRandClick(View view){
-        if (pcs.isRandom) {
-            btnRand.setImageResource(R.drawable.rand_off);
-            pcs.sortCurrentPlaylist();
+        try {
+            if (pcs.isRandom) {
+                pcs.sortCurrentPlaylist();
+            }
+            else {
+                pcs.setCurrentPlaylist(pcs.getShuffledPlaylist());
+            }
+        } catch (NullPointerException e){
+            //empty current playlist
         }
-        else {
-            btnRand.setImageResource(R.drawable.rand_on);
-            pcs.setCurrentPlaylist(pcs.getShuffledPlaylist());
+        catch (Exception e) {
+            Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            if (pcs.isRandom)
+                btnRand.setImageResource(R.drawable.rand_off);
+            else
+                btnRand.setImageResource(R.drawable.rand_on);
+            pcs.isRandom = !pcs.isRandom;
         }
-        pcs.isRandom = !pcs.isRandom;
+
     }
     public void btnToArtists(View view){
         Intent intent = new Intent(PlayerActivity.this, SongListActivity.class);
