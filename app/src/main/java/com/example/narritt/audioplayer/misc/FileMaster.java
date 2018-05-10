@@ -21,6 +21,7 @@ public class FileMaster {
 
     private Context context;
     private String currentPlaylistFileName  = "CurrentPlaylist.txt";
+    private String SEPARATOR = "_-_-_";
     private File  currentPlaylistFile;
 
     public FileMaster(Context ctx){
@@ -30,13 +31,11 @@ public class FileMaster {
 
     public void writeCurrentPlaylist(PlayerCurrentState plState){
         try {
-            //Log.i(TAG, "Trying to create current playlist file");
             currentPlaylistFile.createNewFile();    //if it does not exist
 
             FileOutputStream outputStream = new FileOutputStream(currentPlaylistFile);
             for(Song song : plState.getCurrentPlaylist()) {
-                //Log.i(TAG, "Writing " + plState.getCurrentPlaylist().indexOf(song) + " song from playlist : " + song.toString());
-                outputStream.write((song.toString() + "_-_-_").getBytes());
+                outputStream.write((song.toString() + SEPARATOR).getBytes());
             }
             int indexOfCurrentSong = plState.getCurrentSongIndex();
             if(indexOfCurrentSong == -1) {
@@ -48,6 +47,22 @@ public class FileMaster {
         } catch (Exception e) {
             Log.e(TAG, "ERROR WRITING CURRENT PLAYLIST FILE: " + e.toString() + " - " + e.getMessage());
         }
+    }
+    public void writePlaylist(Playlist playlist){
+        File playlistFile= new File(context.getFilesDir() + playlist.getName());
+        try {
+            playlistFile.createNewFile();
+
+            FileOutputStream outputStream = new FileOutputStream(playlistFile);
+            for(Song song : playlist.getPlaylist()) {
+                outputStream.write((song.toString() + SEPARATOR).getBytes());
+                //в конце файла будет разделитель, после которого песни нет - иметь в виду
+            }
+            outputStream.close();
+        } catch (Exception e) {
+            Log.e(TAG, "ERROR WRITING PLAYLIST " + playlist.getName() + " FILE: " + e.toString() + " - " + e.getMessage());
+        }
+
     }
 
     public Playlist readCurrentPlaylist(){
@@ -62,7 +77,7 @@ public class FileMaster {
                 while ((line = bufferedReader.readLine()) != null){
                     stringBuilder.append(line);
                 }
-                String[] allSongsFromFile = stringBuilder.toString().split("_-_-_");
+                String[] allSongsFromFile = stringBuilder.toString().split(SEPARATOR);
                 for(String s : allSongsFromFile) {
                     if(s.length() > 3) {
                         songs.add(new Song(s));
@@ -79,9 +94,41 @@ public class FileMaster {
         }
         if(songs.isEmpty())
             songs = null;
-        //PlayerCurrentState plState = new PlayerCurrentState(songs, currPosition);
         Playlist pl = new Playlist(songs, currPosition);
         return pl;
     }
     // TODO : 02.03.18 creating and reading user playlist
+
+    public Playlist readPlaylist(String name){
+        File playlistFile= new File(context.getFilesDir() + name);
+        ArrayList<Song> songs = new ArrayList<>();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile)));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            try {
+                //Производим построчное считывание данных из файла в конструктор строки, после того, как данные закончились, создаём объекты Song
+                while ((line = bufferedReader.readLine()) != null){
+                    stringBuilder.append(line);
+                }
+                String[] allSongsFromFile = stringBuilder.toString().split(SEPARATOR);
+
+                for(String s : allSongsFromFile)
+                    songs.add(new Song(s));
+
+            } catch (IOException e) {
+                Log.e(TAG, "ERROR READING CURRENT SONG FILE: " + e.getMessage());
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "CURRENT SONG FILE NOT FOUND WHILE READING: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Weird exception while reading " + name + " playlist : " + e.toString());
+        }
+
+        if(songs.isEmpty())
+            songs = null;
+
+        Playlist pl = new Playlist(songs);
+        return pl;
+    }
 }
