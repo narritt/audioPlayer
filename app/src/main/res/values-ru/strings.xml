@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">audioPlayer</string>
+    <string name="app_name">OctavePlayer</string>
     <string name="allSongsFromArtistList">Все песни</string>
     <string name="backToPlayer">Назад</string>
     <string name="toArtists">Артисты</string>
@@ -11,20 +11,28 @@
     <string name="stopCreatingPlaylist">Отмена</string>
     <string name="saveCurrentPlaylist">Сохранить плейлист</string>
 
+    <!-- PREFERENCES -->
     <string name="pref_equalizer">Эквалайзер</string>
     <string name="pref_equalizer_bass_boost">Усиление басов</string>
     <string name="pref_equalizer_bass_boost_not_supported">Усиление басов не поддерживается вашим устройством</string>
     <string name="pref_night_mode">Ночной режим</string>
     <string name="pref_summary_night_mode">Цветовая инверсия</string>
 
+    <!-- PLAYLISTS -->
     <string name="curr_playlist_title">Текущий плейлист</string>
     <string name="curr_playlist_message_songname">Название</string>
     <string name="curr_playlist_neg_button">Закрыть</string>
 
+    <!-- CONTEXT MENU -->
     <string name="context_menu_edit">Редактировать</string>
     <string name="context_menu_delete">Удалить</string>
 
+    <!-- ERRORS -->
     <string name="error_play_pick_track">Сначала выберите трек!</string>
     <string name="error_playlist_empty">Выбранный плейлист пуст</string>
+    <string name="error_getting_permission_read">Приложение не имеет разрешения для доступа к файловой системе!</string>
+
+    <!-- PERMISSION -->
+    <string name="permission_read">Приложение нуждается в этом разрешении для формировании вашей аудиобиблиотеки</string>
 
 </resources>

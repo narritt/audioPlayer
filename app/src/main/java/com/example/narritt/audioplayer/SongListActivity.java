@@ -69,9 +69,14 @@ public class SongListActivity extends Activity {
         songView = findViewById(R.id.song_list);
         songView.setOnItemClickListener(listener);
 
-        slm = new SongListMaster(this);
-
-        changeStage();
+        try {
+            slm = new SongListMaster(this);
+            changeStage();
+        } catch (SecurityException e){
+            Toast.makeText(this, getString(R.string.error_getting_permission_read), Toast.LENGTH_LONG).show();
+            PlayerActivity plAct = PlayerActivity.getInstance();
+            plAct.checkPermission();
+        }
     }
 
     protected void changeStage(){

@@ -28,8 +28,8 @@
         <activity android:name=".Preferences.PrefActivity" />
         <activity
             android:name=".PlaylistDialogActivity"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"></activity>
-        <activity android:name=".Preferences.PrefEqualizerActivity"></activity>
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
+        <activity android:name=".Preferences.PrefEqualizerActivity"/>
     </application>
 
 </manifest>

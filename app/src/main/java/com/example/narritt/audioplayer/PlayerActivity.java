@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.example.narritt.audioplayer.misc.PlayerCurrentState;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 //import static android.app.Notification.FLAG_ONGOING_EVENT;
@@ -42,10 +44,11 @@ public class PlayerActivity extends Activity {
 
     public PlayerCurrentState pcs = new PlayerCurrentState(this);
 
-    ImageButton btnPlay, btnRand, btnLoop, btnNext, btnPrev;
+    ImageButton btnPlay, btnShuffle, btnLoop, btnNext, btnPrev;
     TextView artistName, albumName, songName, songDuration, currentSongPosition;
     ImageView imgAlbum;
     SeekBar progressControl;
+
     double startTime, finalTime;
 
     FileMaster fileMaster;
@@ -66,11 +69,11 @@ public class PlayerActivity extends Activity {
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
         pcs.setCurrentPlaylistAndSong(fileMaster.readCurrentPlaylist());
-        if (pcs.getCurrentSong() != null) {
-            pcs.createNewMPCurrSong(this);      //MediaPlayer.create(this, pcs.getCurrentSong().getPath())
+        if (pcs.isMPNull()) {
+            pcs.createNewMPCurrSong(this);
             prepareInterface(pcs.getCurrentSong());
         }
-        if(pcs.getMediaPlayer() != null)
+        if(pcs.isMPNull())
             pcs.getMediaPlayer().setOnCompletionListener(MPCompletionListener);
 
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -78,28 +81,36 @@ public class PlayerActivity extends Activity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) {
-                    pcs.getMediaPlayer().seekTo(progress);
-                    UpdateSongTimeManualy();
+                if(!pcs.isMPNull()) {
+                    if (fromUser) {
+                        pcs.getMediaPlayer().seekTo(progress);
+                        UpdateSongTimeManualy();
+                    }
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (pcs.getMediaPlayer().isPlaying()) {
-                    pcs.getMediaPlayer().pause();
-                    pausedOnTouch = true;
+                if(!pcs.isMPNull()) {
+                    if (pcs.getMediaPlayer().isPlaying()) {
+                        pcs.getMediaPlayer().pause();
+                        pausedOnTouch = true;
+                    }
                 }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if( (!pcs.getMediaPlayer().isPlaying()) && (pausedOnTouch)){
-                    pcs.getMediaPlayer().start();
-                    pausedOnTouch = false;
+                if (!pcs.isMPNull()) {
+                    if ((!pcs.getMediaPlayer().isPlaying()) && (pausedOnTouch)) {
+                        pcs.getMediaPlayer().start();
+                        pausedOnTouch = false;
+                    }
                 }
             }
         });
+
+        resetDemensionsImgAlbum();
 
         //nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
@@ -109,7 +120,7 @@ public class PlayerActivity extends Activity {
      */
     public void play(ArrayList<Song> songs, int position){
         pcs.isMusicPlaying = true;
-        if(pcs.getMediaPlayer() != null) //if its a first start of application
+        if(!pcs.isMPNull()) //if its a first start of application
             pcs.getMediaPlayer().stop();
         pcs.setCurrentPlaylistAndSong(songs, position);
         pcs.createNewMP(this, songs.get(position).getPath());
@@ -177,39 +188,35 @@ public class PlayerActivity extends Activity {
 
         loadAlbumCover(song);
 
-        //defense for 0-9 seconds duration and position for string like 1:9, should be 1:09
-        if((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
-            songDuration.setText(String.format("%d:0%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-        else
-            songDuration.setText(String.format("%d:%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-
-        if((TimeUnit.MILLISECONDS.toSeconds((long) finalTime) % 60) < 10)
-            songDuration.setText(String.format("%d:0%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
-        else
-            songDuration.setText(String.format("%d:%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+        setTextCurrentSongTime(startTime);
+        setTextFinalSongTime(finalTime);
 
         progressControl.setMax((int)finalTime);
         progressControl.setProgress((int)startTime);
         if(pcs.isMusicPlaying)
             myHandler.postDelayed(UpdateSongTime,100);
     }
+    public void setTextCurrentSongTime(double currentTime){
+        if ((TimeUnit.MILLISECONDS.toSeconds((long) currentTime) % 60) < 10)
+            currentSongPosition.setText(String.format(Locale.ENGLISH, "%d:0%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) currentTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) currentTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) currentTime))));
+        else
+            currentSongPosition.setText(String.format(Locale.ENGLISH, "%d:%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) currentTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) currentTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) currentTime))));
+    }
+    public void setTextFinalSongTime(double _finalTime){
+        if((TimeUnit.MILLISECONDS.toSeconds((long) _finalTime) % 60) < 10)
+            songDuration.setText(String.format(Locale.ENGLISH, "%d:0%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) _finalTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) _finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) _finalTime))));
+        else
+            songDuration.setText(String.format(Locale.ENGLISH, "%d:%d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) _finalTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) _finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) _finalTime))));
+    }
     public void loadAlbumCover(Song song){
-        /*
-         * Необходима сторонняя библиотека для чтения данных
-         * из ID3 тегов. Можно использовать библиотеку сразу для записи,
-         * как, например Jaudiotagger (http://www.jthink.net/jaudiotagger/),
-         * с этим надо разобраться.
-         * http://qaru.site/questions/327594/how-to-use-the-java-mp3-id3-tag-library-to-retrieve-album-artwork
-         */
-        //float height = imgAlbum.getHeight();
         boolean coverFound = false;
         String coverArtPath = getCoverArtPath(song.getAlbumId());
 
@@ -227,8 +234,8 @@ public class PlayerActivity extends Activity {
             for (File file : dir.listFiles()) {
                 String fileName = file.getName().toLowerCase();
                 if (fileName.contains("cover.jpg") || fileName.contains("front.jpg")) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                imgAlbum.setImageBitmap(myBitmap);
+                    Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    imgAlbum.setImageBitmap(myBitmap);
                     coverFound = true;
                     break;
                 }
@@ -240,6 +247,9 @@ public class PlayerActivity extends Activity {
         }
 
         //DIMENSIONS OF IMGALBUM
+        resetDemensionsImgAlbum();
+    }
+    private void resetDemensionsImgAlbum(){
         Display display = getWindowManager().getDefaultDisplay();
         Point point = new Point();
         display.getSize(point);
@@ -265,15 +275,7 @@ public class PlayerActivity extends Activity {
     }
     private void UpdateSongTimeManualy(){
         startTime = pcs.getMediaPlayer().getCurrentPosition();
-        //defense for 0-9 seconds position for string like 1:9, should be 1:09
-        if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
-            currentSongPosition.setText(String.format("%d:0%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-        else
-            currentSongPosition.setText(String.format("%d:%d",
-                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+        setTextCurrentSongTime(startTime);
         progressControl.setProgress((int) startTime);
     }
     private Runnable UpdateSongTime = new Runnable() {
@@ -281,15 +283,7 @@ public class PlayerActivity extends Activity {
         public void run() {
             if(!pcs.isApplicationDestroying) {
                 startTime = pcs.getMediaPlayer().getCurrentPosition();
-                //defense for 0-9 seconds position for string like 1:9, should be 1:09
-                if ((TimeUnit.MILLISECONDS.toSeconds((long) startTime) % 60) < 10)
-                    currentSongPosition.setText(String.format("%d:0%d",
-                            TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                            TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-                else
-                    currentSongPosition.setText(String.format("%d:%d",
-                            TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                            TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+                setTextCurrentSongTime(startTime);
                 progressControl.setProgress((int) startTime);
                 myHandler.postDelayed(this, 100);
             }
@@ -373,9 +367,9 @@ public class PlayerActivity extends Activity {
             Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
         } finally {
             if (pcs.isRandom)
-                btnRand.setImageResource(R.drawable.rand_off);
+                btnShuffle.setImageResource(R.drawable.rand_off);
             else
-                btnRand.setImageResource(R.drawable.rand_on);
+                btnShuffle.setImageResource(R.drawable.rand_on);
             pcs.isRandom = !pcs.isRandom;
         }
 
@@ -404,7 +398,7 @@ public class PlayerActivity extends Activity {
     private void findViews(){
         btnPlay =               findViewById(R.id.btnPlay);
         btnLoop =               findViewById(R.id.btnLoop);
-        btnRand =               findViewById(R.id.btnRand);
+        btnShuffle =               findViewById(R.id.btnRand);
         btnNext =               findViewById(R.id.btnNext);
         btnPrev =               findViewById(R.id.btnPrev);
         artistName =            findViewById(R.id.strArtistName);
@@ -415,18 +409,18 @@ public class PlayerActivity extends Activity {
         progressControl =       findViewById(R.id.progressControl);
         imgAlbum =              findViewById(R.id.imgAlbum);
     }
-    private void checkPermission(){
+    public void checkPermission(){
         int requestCode = 0;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+                // Show an explanation to the user *asynchronously* -- don't block this thread waiting for the user's response! After the user sees the explanation, try again to request the permission.
+                Toast.makeText(this, getString(R.string.permission_read), Toast.LENGTH_LONG).show();
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
+                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
                 // requestCode is an app-defined int constant. The callback method gets the result of the request.
             }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
         }
     }
     @Override
@@ -444,7 +438,7 @@ public class PlayerActivity extends Activity {
 
     /*  Освобождает используемые проигрывателем ресурсы */
     private void releaseMP() {
-        if (pcs.getMediaPlayer() != null) {
+        if (!pcs.isMPNull()) {
             stopPlay();
             try {
                 pcs.getMediaPlayer().release();

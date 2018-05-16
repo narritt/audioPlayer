@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">audioPlayer</string>
+    <string name="app_name">OctavePlayer</string>
     <string name="allSongsFromArtistList">All songs</string>
     <string name="backToPlayer">Back</string>
     <string name="toArtists">To artists</string>
@@ -11,22 +11,32 @@
     <string name="stopCreatingPlaylist">Stop creating</string>
     <string name="saveCurrentPlaylist">Save playlist</string>
 
+    <!-- PREFERENCES -->
     <string name="pref_equalizer">Equalizer</string>
     <string name="pref_equalizer_bass_boost">Bass boost</string>
     <string name="pref_equalizer_bass_boost_not_supported">BassBoost is not supported on your device</string>
     <string name="pref_night_mode">Night mode</string>
     <string name="pref_summary_night_mode">Color inversion</string>
 
+    <!-- PLAYLISTS -->
     <string name="curr_playlist_title">Current playlist</string>
     <string name="curr_playlist_message_songname">Title</string>
     <string name="curr_playlist_neg_button">Close</string>
 
+    <!-- CONTEXT MENU -->
     <string name="context_menu_edit">Edit</string>
     <string name="context_menu_delete">Delete</string>
 
+    <!-- ERRORS -->
     <string name="error_play_pick_track">You should pick a track</string>
     <string name="error_playlist_empty">Picked playlist is empty</string>
+    <string name="error_getting_permission_read">Application does not have permission for reading file system!</string>
 
+    <!-- PERMISSION -->
+    <string name="permission_read">Application need this permission for check your audio library</string>
+
+
+    <!-- SYSTEM STRINGS DON'T DUPLICATE -->
     <string name="pref_equalizer_seekbar_title_1">60 Hz</string>
     <string name="pref_equalizer_seekbar_title_2">230 Hz</string>
     <string name="pref_equalizer_seekbar_title_3">910 Hz</string>
@@ -34,7 +44,6 @@
     <string name="pref_equalizer_seekbar_title_5">14 kHz</string>
     <string name="pref_equalizer_15db">+15dB</string>
     <string name="pref_equalizer_min15db">-15dB</string>
-
 
     <string name="title_activity_playlists">PlaylistsActivity</string>
     <string name="timestamp_track_start">0:00</string>

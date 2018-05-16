@@ -52,7 +52,7 @@ public class SongListMaster {
         return playlistList;
     }
 
-    private void createSongList() {
+    private void createSongList() throws SecurityException {
         ContentResolver musicResolver = ctx.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);

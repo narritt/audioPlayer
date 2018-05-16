@@ -146,6 +146,9 @@ public class PlayerCurrentState {
         }
     }
 
+    public boolean isMPNull(){
+        return mediaPlayer == null;
+    }
     public void destroyMP(){
         mediaPlayer = null;
     }
