@@ -21,6 +21,7 @@
 
         <TextView
             android:id="@+id/album_title"
+            android:text="@string/SAMPLE_TEXT"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -30,6 +31,7 @@
 
         <TextView
             android:id="@+id/album_artist"
+            android:text="@string/SAMPLE_TEXT"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

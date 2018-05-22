@@ -7,6 +7,7 @@
 
     <TextView
         android:id="@+id/song_title"
+        android:text="@string/SAMPLE_TEXT"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#0c0c0c"
@@ -15,6 +16,7 @@
 
     <TextView
         android:id="@+id/song_artist"
+        android:text="@string/SAMPLE_TEXT"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#0c0c0c"

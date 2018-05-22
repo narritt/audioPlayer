@@ -430,7 +430,7 @@ public class PlayerActivity extends Activity {
     }
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "On destroy, trying to write current playlist");
+        Log.i(TAG, "On destroy");
         pcs.isApplicationDestroying = true;
         releaseMP();
         super.onDestroy();

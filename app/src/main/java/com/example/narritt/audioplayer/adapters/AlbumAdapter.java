@@ -20,10 +20,6 @@ import com.example.narritt.audioplayer.items.Album;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by Narritt on 09.12.2017.
- */
-
 public class AlbumAdapter extends BaseAdapter {
     private static final String TAG = "MyAudioPlayer";
 

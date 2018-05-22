@@ -3,6 +3,7 @@ package com.example.narritt.audioplayer.Preferences;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +16,16 @@ import com.example.narritt.audioplayer.R;
 
 import java.util.ArrayList;
 
-public class PrefActivity extends Activity {
+public class PrefActivity extends PreferenceActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.preferences);
+    }
+}
+
+/*public class PrefActivity extends Activity {
     ListView menu;
 
     @Override
@@ -49,4 +59,4 @@ public class PrefActivity extends Activity {
     public void btnBackToPlayerClick(View view){
         finish();
     }
-}
+}*/

@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference android:title="@string/pref_equalizer" >
-        <intent android:action="android.intent.action.VIEW"
-            android:data="http://www.example.com" />
-    </Preference>
-    <CheckBoxPreference
-        android:key="pref_night_mode"
-        android:summary="@string/pref_summary_night_mode"
-        android:title="@string/pref_night_mode"
-        android:defaultValue="false" />
+    <PreferenceCategory
+        android:key="pref_categ_audio"
+        android:title="@string/pref_categ_audio">
+        <Preference
+            android:key="equalizer"
+            android:title="@string/pref_equalizer">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetPackage="com.example.narritt.audioplayer"
+                android:targetClass="com.example.narritt.audioplayer.Preferences.PrefEqualizerActivity" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_categ_interface"
+        android:title="@string/pref_categ_interface">
+        <CheckBoxPreference
+            android:key="pref_night_mode"
+            android:summary="@string/pref_summary_night_mode"
+            android:title="@string/pref_night_mode"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_categ_filesystem"
+        android:title="@string/pref_categ_filesystem">
+        <Preference
+            android:key="pref_file_ignore"
+            android:title="@string/pref_file_ignore"
+            android:summary="@string/pref_summary_file_ignore">
+        </Preference>
+</PreferenceCategory>
 </PreferenceScreen>

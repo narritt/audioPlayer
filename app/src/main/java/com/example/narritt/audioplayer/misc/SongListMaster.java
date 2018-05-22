@@ -37,6 +37,10 @@ public class SongListMaster {
     }
 
     public ArrayList<Artist>    getArtistList(){
+        if (artistList.isEmpty()) {
+            createSongList();
+            createArtistList();
+        }
         return artistList;
     }
     public ArrayList<Album>     getAlbumList(){

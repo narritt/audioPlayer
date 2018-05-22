@@ -24,6 +24,7 @@ public class PlaylistDialogActivity extends Activity {
 
     Bundle extras;
     ListView songListView;
+    TextView TVnum_and_name;
 
     private PlayerCurrentState pcs = PlayerCurrentState.get_instance();
 
@@ -33,10 +34,7 @@ public class PlaylistDialogActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_dialog);
         extras = getIntent().getExtras();
-        TextView TVnum_and_name = findViewById(R.id.numandname);
-        TVnum_and_name.setText("№" + getString(R.string.tab) + getString(R.string.curr_playlist_message_songname));
-
-        songListView = findViewById(R.id.playlist_song_list);
+        findViews();
         reloadListView();
         songListView.setOnItemClickListener(listener);
         registerForContextMenu(songListView);
@@ -45,7 +43,6 @@ public class PlaylistDialogActivity extends Activity {
     private AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(PlaylistDialogActivity.this, "Click on " + pcs.getCurrentPlaylist().get(position).getTitle(), Toast.LENGTH_SHORT).show();
                 pcs.getPlayerActivity().play(pcs.getShowingInActivityPlaylist(), position);
                 finish();
             }
@@ -82,11 +79,11 @@ public class PlaylistDialogActivity extends Activity {
             }
 
         } catch (NullPointerException e){
+            TVnum_and_name.setVisibility(View.GONE);
             playlist.add(getApplicationContext().getString(R.string.error_playlist_empty));
-            Toast.makeText(this, R.string.error_playlist_empty, Toast.LENGTH_SHORT).show();
         } catch (Exception e){
+            TVnum_and_name.setVisibility(View.GONE);
             playlist.add(e.getMessage());
-            Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
         } finally {
             adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, playlist);
             songListView.setAdapter(adapter);
@@ -94,14 +91,16 @@ public class PlaylistDialogActivity extends Activity {
 
     }
 
-    public void btnCloseClick(View view){
-        finish();
+    private void findViews(){
+        TVnum_and_name = findViewById(R.id.numandname);
+        TVnum_and_name.setText("№" + getString(R.string.tab) + getString(R.string.curr_playlist_message_songname));
+        songListView = findViewById(R.id.playlist_song_list);
     }
 
     @Override
     protected void onStop() {
-        if (extras.getString("PLAYLIST").equals("CURRENT"))
-            pcs.setCurrentPlaylist(pcs.getShowingInActivityPlaylist());
+        //if (extras.getString("PLAYLIST").equals("CURRENT"))
+            //pcs.setCurrentPlaylist(pcs.getShowingInActivityPlaylist());
         super.onStop();
     }
 }

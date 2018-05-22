@@ -152,6 +152,7 @@ public class PrefEqualizerActivity extends AppCompatActivity {
             if (!bassBoost.getStrengthSupported()) {
                 Toast toast = Toast.makeText(getApplicationContext(), "BassBoost is not supported on your device, sorry", Toast.LENGTH_SHORT);
                 toast.show();
+                sbBass.setProgress(0);
                 sbBass.setEnabled(false);
             }
         }
