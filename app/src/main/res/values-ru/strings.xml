@@ -27,6 +27,8 @@
     <string name="curr_playlist_title">Текущий плейлист</string>
     <string name="curr_playlist_message_songname">Название</string>
     <string name="curr_playlist_neg_button">Закрыть</string>
+    <string name="playlistnamedialog_name">Название плейлиста:</string>
+    <string name="playlistnamedialog_cancel">Отмена</string>
 
     <!-- CONTEXT MENU -->
     <string name="context_menu_edit">Редактировать</string>

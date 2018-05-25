@@ -2,7 +2,6 @@ package com.example.narritt.audioplayer;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,7 +11,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.narritt.audioplayer.items.Song;
 import com.example.narritt.audioplayer.misc.PlayerCurrentState;
@@ -52,16 +50,16 @@ public class PlaylistDialogActivity extends Activity {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.playlist_context_menu, menu);
+        inflater.inflate(R.menu.playlist_dialog_act_context_menu, menu);
     }
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
-            case R.id.context_menu_edit:
+            case R.id.context_menu_song_edit:
                 //editItem(info.position); // метод, выполняющий действие при редактировании пункта меню
                 return true;
-            case R.id.context_menu_delete:
+            case R.id.context_menu_song_delete:
                 pcs.getShowingInActivityPlaylist().remove(info.position);   //метод, выполняющий действие при удалении пункта меню
                 reloadListView();
                 return true;

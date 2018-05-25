@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.example.narritt.audioplayer.R;
 import com.example.narritt.audioplayer.items.Album;
@@ -12,12 +13,13 @@ import com.example.narritt.audioplayer.items.Artist;
 import com.example.narritt.audioplayer.items.Playlist;
 import com.example.narritt.audioplayer.items.Song;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class SongListMaster {
-    //private static final String TAG = "MyAudioPlayer";
+    private static final String TAG = "MyAudioPlayer";
     private Context ctx;
 
     private ArrayList<Artist> artistList;
@@ -54,6 +56,12 @@ public class SongListMaster {
     }
     public ArrayList<Playlist>  getPlaylistList(){
         return playlistList;
+    }
+    public Playlist             getPlaylist(Playlist searched){
+        for (Playlist pl : playlistList)
+            if (pl.getName().equals(searched.getName()))
+                return pl;
+        return new Playlist();
     }
 
     private void createSongList() throws SecurityException {
@@ -148,10 +156,19 @@ public class SongListMaster {
         });
     }
     public boolean createPlaylistsList(){
-        //playlistList.clear();
-        //TODO method returning playlist[] of created playlists;
+        playlistList.clear();
+        FileMaster FM = new FileMaster(ctx);
+        File playlistFolder = new File(ctx.getFilesDir() + File.separator + "playlists");
+        File[] files = playlistFolder.listFiles();
+        for (File f : files)
+        {
+            if (f.getName().equals(FM.currentPlaylistFileName))
+                continue;
+            Playlist playlist = FM.readPlaylist(f.getName());
+            playlistList.add(playlist);
+        }
         //return FALSE if there is no created playlists
-        return playlistList.isEmpty();
+        return !playlistList.isEmpty();
     }
 
     public void clearAlbumList(){
@@ -163,5 +180,12 @@ public class SongListMaster {
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
+    }
+
+    public void deletePlaylist(int position) {
+        Playlist deletedPlaylist = playlistList.get(position);
+        playlistList.remove(position);
+        FileMaster FM = new FileMaster(ctx);
+        FM.deletePlaylist(deletedPlaylist.getName());
     }
 }

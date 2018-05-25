@@ -27,6 +27,8 @@
     <string name="curr_playlist_title">Current playlist</string>
     <string name="curr_playlist_message_songname">Title</string>
     <string name="curr_playlist_neg_button">Close</string>
+    <string name="playlistnamedialog_name">Input playlist name:</string>
+    <string name="playlistnamedialog_cancel">Cancel</string>
 
     <!-- CONTEXT MENU -->
     <string name="context_menu_edit">Edit</string>

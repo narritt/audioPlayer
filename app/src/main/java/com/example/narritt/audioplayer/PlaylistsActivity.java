@@ -1,17 +1,23 @@
 package com.example.narritt.audioplayer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-import com.example.narritt.audioplayer.adapters.AddSongAdapter;
 import com.example.narritt.audioplayer.adapters.AlbumAdapter;
 import com.example.narritt.audioplayer.adapters.ArtistAdapter;
 import com.example.narritt.audioplayer.adapters.PlaylistAdapter;
@@ -19,6 +25,7 @@ import com.example.narritt.audioplayer.adapters.SongAdapter;
 import com.example.narritt.audioplayer.items.Album;
 import com.example.narritt.audioplayer.items.Artist;
 import com.example.narritt.audioplayer.items.Playlist;
+import com.example.narritt.audioplayer.misc.FileMaster;
 import com.example.narritt.audioplayer.misc.SongListMaster;
 
 public class PlaylistsActivity extends AppCompatActivity {
@@ -38,66 +45,25 @@ public class PlaylistsActivity extends AppCompatActivity {
     private static Album pickedAlbum = null;
     private static Playlist creatingPlaylist = new Playlist();
 
-    private OnItemClickListener listener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            switch (currStage) {
-                case PLAYLISTS:
-                    //currStage = ListViewStage.SONGS;
-                    //pickedPlaylist = playlistList.get(position);
-                    break;
-                case SONGS:
-
-                    break;
-                case ADD_ARTISTS:
-                    if(position == 0)
-                        currStage = ListViewStage.ADD_ALL_SONGS;
-                    else {
-                        currStage = ListViewStage.ADD_ALBUMS;
-                        pickedArtist = slm.getArtistList().get(position);
-                    }
-                    changeStage();
-                    break;
-                case ADD_ALBUMS:
-                    currStage = ListViewStage.ADD_SONGS;
-                    pickedAlbum = slm.getAlbumList().get(position);
-                    changeStage();
-                    break;
-                case ADD_SONGS:
-                    Toast toast = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист", Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    creatingPlaylist.addSong(slm.getThisAlbumSongsList().get(position));
-                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
-
-                    //AddSongAdapter songAdt = songView.getAdapter().getItem(position); //new AddSongAdapter(getApplicationContext(), slm.getThisAlbumSongsList());
-                    //View songpoing = songAdt.getView(position, null, null);
-
-                    //String item = (String) view.getListAdapter().getItem(position);
-                    break;
-                case ADD_ALL_SONGS:
-                    Toast toast1 = Toast.makeText(getApplicationContext(), "Готов добавить трек в плейлист из полного списка треков", Toast.LENGTH_SHORT);
-                    creatingPlaylist.addSong(slm.getSongList().get(position));
-                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
-                    toast1.show();
-                    break;
-            }
-        }
-    };
+    private FileMaster FM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlists);
+        findViews();
+        registerForContextMenu(songView);
 
-        slm = new SongListMaster(this);
+        FM = new FileMaster(this);
 
-        songView = findViewById(R.id.playlist_list);
-        songView.setOnItemClickListener(listener);
-        btnCreatePlaylist = findViewById(R.id.btnAddPlaylist);
-        btnBackToPlayer = findViewById(R.id.btnBackToPlayer);
-
-        changeStage();
+        try {
+            slm = new SongListMaster(this);
+            changeStage();
+        } catch (SecurityException e){
+            Toast.makeText(this, getString(R.string.error_getting_permission_read), Toast.LENGTH_LONG).show();
+            PlayerActivity plAct = PlayerActivity.getInstance();
+            plAct.checkPermission();
+        }
     }
 
     protected void changeStage(){
@@ -115,7 +81,8 @@ public class PlaylistsActivity extends AppCompatActivity {
                 songView.setAdapter(pllAdt);
                 break;
             case SONGS:
-
+                SongAdapter sAdt = new SongAdapter(this, pickedPlaylist.getPlaylist());
+                songView.setAdapter(sAdt);
                 break;
             case ADD_ARTISTS:
                 slm.createArtistList();
@@ -135,13 +102,15 @@ public class PlaylistsActivity extends AppCompatActivity {
                 }
                 break;
             case ADD_SONGS:
+                Log.i(TAG, "Готов добавить трек в плейлист");
                 slm.createSongsFromAlbum(pickedAlbum);
-                AddSongAdapter songAdt = new AddSongAdapter(this, slm.getThisAlbumSongsList());
+                SongAdapter songAdt = new SongAdapter(this, slm.getThisAlbumSongsList());
                 songView.setAdapter(songAdt);
                 break;
             case ADD_ALL_SONGS:
+                Log.i(TAG, "Готов добавить трек в плейлист");
                 slm.sortSongList();
-                AddSongAdapter allSongsAdt = new AddSongAdapter(this, slm.getSongList());
+                SongAdapter allSongsAdt = new SongAdapter(this, slm.getSongList());
                 songView.setAdapter(allSongsAdt);
                 break;
         }
@@ -151,18 +120,90 @@ public class PlaylistsActivity extends AppCompatActivity {
      * Interface logic
      */
     public void btnToPlayerClick(View view){
-        finish();
+        if(currStage == ListViewStage.PLAYLISTS || currStage == ListViewStage.SONGS) {
+            finish();
+        } else
+        if(currStage == ListViewStage.ADD_ARTISTS || currStage == ListViewStage.ADD_ALBUMS || currStage == ListViewStage.ADD_SONGS || currStage == ListViewStage.ADD_ALL_SONGS) {
+            creatingPlaylist.clear();
+            currStage = ListViewStage.PLAYLISTS;
+            changeStage();
+        }
     }
     public void btnAddPlaylistClick(View view){
         if(currStage == ListViewStage.PLAYLISTS || currStage == ListViewStage.SONGS) {
             currStage = ListViewStage.ADD_ARTISTS;
+            changeStage();
         } else
         if(currStage == ListViewStage.ADD_ARTISTS || currStage == ListViewStage.ADD_ALBUMS || currStage == ListViewStage.ADD_SONGS || currStage == ListViewStage.ADD_ALL_SONGS) {
+            createPlaylistNameDialog();
             currStage = ListViewStage.PLAYLISTS;
         }
-        //currStage = ListViewStage.ADD_ARTISTS;
-        changeStage();
     }
+
+    private void createPlaylistNameDialog(){
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.playlistname_dialog, null);
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(this);
+        mDialogBuilder.setView(promptsView);
+        final EditText userInput = promptsView.findViewById(R.id.input_text);
+        mDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                creatingPlaylist.setName(userInput.getText().toString());
+                                FM.writePlaylist(creatingPlaylist);
+                                changeStage();
+                            }
+                        })
+                .setNegativeButton(R.string.playlistnamedialog_cancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alertDialog = mDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    /*
+     * SYSTEM LOGIC
+     */
+
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = getMenuInflater();
+        switch (currStage){
+            case PLAYLISTS:
+                inflater.inflate(R.menu.playlist_context_menu, menu);
+                break;
+            case SONGS:
+                inflater.inflate(R.menu.playlist_song_context_menu, menu);
+                break;
+            default:
+                break;
+        }
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.context_menu_playlist_delete:
+                slm.deletePlaylist(info.position);
+                changeStage();
+                return true;
+            case R.id.context_menu_playlist_song_delete:
+                Playlist pl = slm.getPlaylist(pickedPlaylist);
+                pl.removeSong(info.position);
+                FM.writePlaylist(pl);
+                changeStage();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
     @Override
     public void onBackPressed() {
         switch (currStage){
@@ -171,6 +212,7 @@ public class PlaylistsActivity extends AppCompatActivity {
                 break;
             case SONGS:
                 currStage = ListViewStage.PLAYLISTS;
+                changeStage();
                 break;
             case ADD_ARTISTS:
                 currStage = ListViewStage.PLAYLISTS;
@@ -200,6 +242,49 @@ public class PlaylistsActivity extends AppCompatActivity {
         }
         return super.onKeyLongPress(keyCode, event);
     }
+    private void findViews(){
+        songView = findViewById(R.id.playlist_list);
+        songView.setOnItemClickListener(listener);
+        btnCreatePlaylist = findViewById(R.id.btnAddPlaylist);
+        btnBackToPlayer = findViewById(R.id.btnBackToPlayer);
+    }
 
-
+    private OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            switch (currStage) {
+                case PLAYLISTS:
+                    currStage = ListViewStage.SONGS;
+                    pickedPlaylist = slm.getPlaylistList().get(position);
+                    changeStage();
+                    break;
+                case SONGS:
+                    PlayerActivity.getInstance().play(pickedPlaylist.getPlaylist(), 0);
+                    finish();
+                    break;
+                case ADD_ARTISTS:
+                    if(position == 0)
+                        currStage = ListViewStage.ADD_ALL_SONGS;
+                    else {
+                        currStage = ListViewStage.ADD_ALBUMS;
+                        pickedArtist = slm.getArtistList().get(position);
+                    }
+                    changeStage();
+                    break;
+                case ADD_ALBUMS:
+                    currStage = ListViewStage.ADD_SONGS;
+                    pickedAlbum = slm.getAlbumList().get(position);
+                    changeStage();
+                    break;
+                case ADD_SONGS:
+                    creatingPlaylist.addSong(slm.getThisAlbumSongsList().get(position));
+                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
+                    break;
+                case ADD_ALL_SONGS:
+                    creatingPlaylist.addSong(slm.getSongList().get(position));
+                    Log.i(TAG, "Adding song to playlist; playlist now: " + creatingPlaylist.toString());
+                    break;
+            }
+        }
+    };
 }

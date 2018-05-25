@@ -69,11 +69,11 @@ public class PlayerActivity extends Activity {
         //getting written current song from file
         fileMaster = new FileMaster(getApplicationContext());
         pcs.setCurrentPlaylistAndSong(fileMaster.readCurrentPlaylist());
-        if (pcs.isMPNull()) {
+        if (pcs.isMPNull() && pcs.getCurrentSong() != null) {
             pcs.createNewMPCurrSong(this);
             prepareInterface(pcs.getCurrentSong());
         }
-        if(pcs.isMPNull())
+        if(!pcs.isMPNull())
             pcs.getMediaPlayer().setOnCompletionListener(MPCompletionListener);
 
         progressControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -295,16 +295,14 @@ public class PlayerActivity extends Activity {
      */
     public void btnPlayClick(View view){
         try {
-            if(pcs.getCurrentPlaylist() == null) {
-                Toast.makeText(this, R.string.error_play_pick_track, Toast.LENGTH_SHORT).show();
-            }
-            else {
-                if (pcs.isMusicPlaying)
-                    pausePlay();
-                else
-                    resumePlay();
-            }
+            if (pcs.isMusicPlaying)
+                pausePlay();
+            else
+                resumePlay();
         } catch (Exception e) {
+            if(pcs.getCurrentPlaylist() == null)
+                Log.e(TAG, "Current Playlist == null. It's okey, if its first start of application");
+            Log.e(TAG, e.getClass() + e.getMessage());
             Toast.makeText(this, R.string.error_play_pick_track, Toast.LENGTH_SHORT).show();
         }
     }

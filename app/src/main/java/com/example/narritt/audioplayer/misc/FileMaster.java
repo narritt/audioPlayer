@@ -20,28 +20,28 @@ public class FileMaster {
     private static final String TAG = "MyAudioPlayer";
 
     private Context context;
-    private String currentPlaylistFileName  = "CurrentPlaylist.txt";
+    public String currentPlaylistFileName  = "_currentPlaylist.txt";
     private String SEPARATOR = "_-_-_";
     private File  currentPlaylistFile;
+    private File playlistFolder;
 
     public FileMaster(Context ctx){
         context = ctx;
-        currentPlaylistFile = new File(context.getFilesDir() + currentPlaylistFileName);
+        playlistFolder = new File(context.getFilesDir() + File.separator + "playlists");
+        if (!playlistFolder.exists())
+            playlistFolder.mkdir();
+        currentPlaylistFile = new File(playlistFolder.getPath() + File.separator + currentPlaylistFileName);
     }
 
     public void writeCurrentPlaylist(PlayerCurrentState plState){
         try {
             currentPlaylistFile.createNewFile();    //if it does not exist
-
+            //Log.i(TAG, "Writting current playlist: " + currentPlaylistFile);
             FileOutputStream outputStream = new FileOutputStream(currentPlaylistFile);
             for(Song song : plState.getCurrentPlaylist()) {
                 outputStream.write((song.toString() + SEPARATOR).getBytes());
             }
             int indexOfCurrentSong = plState.getCurrentSongIndex();
-            if(indexOfCurrentSong == -1) {
-                Log.e(TAG, "Writing current playlist: current song does not exist in current playlist!");
-                indexOfCurrentSong = 0;
-            }
             outputStream.write( ( String.valueOf(indexOfCurrentSong) ).getBytes() ); //index of current song
             outputStream.close();
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class FileMaster {
         }
     }
     public void writePlaylist(Playlist playlist){
-        File playlistFile= new File(context.getFilesDir() + playlist.getName());
+        File playlistFile= new File(playlistFolder.getPath() + File.separator + playlist.getName());
         try {
             playlistFile.createNewFile();
 
@@ -70,6 +70,7 @@ public class FileMaster {
         int currPosition = 0;
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(currentPlaylistFile)));
+            //Log.i(TAG, "Reading current playlist: " + currentPlaylistFile);
             StringBuilder stringBuilder = new StringBuilder();
             String line;
             try {
@@ -100,21 +101,22 @@ public class FileMaster {
     // TODO : 02.03.18 creating and reading user playlist
 
     public Playlist readPlaylist(String name){
-        File playlistFile= new File(context.getFilesDir() + name);
+        File playlistFile= new File(playlistFolder.getPath() + File.separator + name);
         ArrayList<Song> songs = new ArrayList<>();
+        //Log.i(TAG, "Reading user playlist " + name);
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile)));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
             try {
-                //Производим построчное считывание данных из файла в конструктор строки, после того, как данные закончились, создаём объекты Song
                 while ((line = bufferedReader.readLine()) != null){
                     stringBuilder.append(line);
                 }
                 String[] allSongsFromFile = stringBuilder.toString().split(SEPARATOR);
 
-                for(String s : allSongsFromFile)
+                for(String s : allSongsFromFile) {
                     songs.add(new Song(s));
+                }
 
             } catch (IOException e) {
                 Log.e(TAG, "ERROR READING CURRENT SONG FILE: " + e.getMessage());
@@ -128,7 +130,13 @@ public class FileMaster {
         if(songs.isEmpty())
             songs = null;
 
-        Playlist pl = new Playlist(songs);
+        Playlist pl = new Playlist(name, songs);
         return pl;
+    }
+
+    public void deletePlaylist(String name) {
+        File playlistFile= new File(playlistFolder.getPath() + File.separator + name);
+        if (playlistFile.exists())
+            playlistFile.delete();
     }
 }

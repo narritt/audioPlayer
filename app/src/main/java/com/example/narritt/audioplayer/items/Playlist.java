@@ -27,6 +27,10 @@ public class Playlist {
         this.currentPosition = currentPosition;
     }
 
+    public void setName(String n){
+        name = n;
+    }
+
     public String getName() {
         return name;
     }
@@ -48,5 +52,14 @@ public class Playlist {
     }
     public void clear() {
         playlist.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                "name='" + name + '\'' +
+                ", playlist=" + playlist +
+                ", currentPosition=" + currentPosition +
+                '}';
     }
 }
