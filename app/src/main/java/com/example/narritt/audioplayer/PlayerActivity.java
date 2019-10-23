@@ -38,6 +38,10 @@ import java.util.concurrent.TimeUnit;
 
 //import static android.app.Notification.FLAG_ONGOING_EVENT;
 
+
+
+//GIT BRANCH TEST 11
+
 public class PlayerActivity extends Activity {
     private static final String TAG = "MyAudioPlayer";
     static PlayerActivity instance;

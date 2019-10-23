@@ -2,6 +2,8 @@ package com.example.narritt.audioplayer.items;
 
 import android.widget.ImageView;
 
+//git
+
 public class Album {
 
     private long id;
